@@ -1,0 +1,12 @@
+using backend.Domain.Entities;
+
+namespace backend.Infrastructure.Repositories
+{
+    public interface ICategoryRepository
+    {
+        Task AddAsync(Category category);
+        Task<Category?> GetByIdAsync(Guid id, Guid userID);
+        Task UpdateAsync(Category category);
+        Task DeleteAsync(Category category);
+    }
+}
