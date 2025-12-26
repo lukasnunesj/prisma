@@ -1,4 +1,4 @@
-using backend.Infrastructure.Repositories;
+using backend.Infrastructure.Repositories.Categories;
 
 namespace backend.Infrastructure.DI
 {

@@ -2,7 +2,7 @@ using backend.Domain.Entities;
 using backend.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 
-namespace backend.Infrastructure.Repositories
+namespace backend.Infrastructure.Repositories.Categories
 {
     public class CategoryRepository(ApplicationDbContext context) : ICategoryRepository
     {

@@ -1,0 +1,194 @@
+{
+    "_type": "export",
+    "__export_format": 4,
+    "__export_date": "2025-12-26T16:58:00.000Z",
+    "__export_source": "prisma-backend-insomnia-scratchpad",
+    "resources": [
+        {
+            "_id": "wrk_prisma",
+            "_type": "workspace",
+            "name": "Prisma Backend (Scratchpad)",
+            "description": ""
+        },
+        {
+            "_id": "env_prisma_base",
+            "_type": "environment",
+            "parentId": "wrk_prisma",
+            "name": "Base Environment",
+            "data": {
+                "base_url": "http://localhost:5000",
+                "auth_email": "lucas+1@teste.com",
+                "auth_password": "Zesty-Jeeringly3-Nuzzle",
+                "token": "",
+                "category_id": "",
+                "user_id": ""
+            },
+            "dataPropertyOrder": {
+                "&": [
+                    "base_url",
+                    "auth_email",
+                    "auth_password",
+                    "token",
+                    "category_id",
+                    "user_id"
+                ]
+            },
+            "color": null,
+            "isPrivate": false
+        },
+        {
+            "_id": "fld_auth",
+            "_type": "request_group",
+            "parentId": "wrk_prisma",
+            "name": "Auth",
+            "description": ""
+        },
+        {
+            "_id": "req_auth_register",
+            "_type": "request",
+            "parentId": "fld_auth",
+            "name": "Register",
+            "method": "POST",
+            "url": "{{ _.base_url }}/api/Auth/register",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n  \"name\": \"Lucas\",\n  \"email\": \"lucas+1@teste.com\",\n  \"password\": \"Zesty-Jeeringly3-Nuzzle\"\n}"
+            }
+        },
+        {
+            "_id": "req_auth_login",
+            "_type": "request",
+            "parentId": "fld_auth",
+            "name": "Login",
+            "method": "POST",
+            "url": "{{ _.base_url }}/api/Auth",
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n  \"email\": \"lucas+1@teste.com\",\n  \"password\": \"Zesty-Jeeringly3-Nuzzle\"\n}"
+            },
+            "afterResponseScript": "const jsonBody = insomnia.response.json();\n\nif (jsonBody && jsonBody.token) {\n    insomnia.environment.set('token', jsonBody.token);\n}\n\nif (jsonBody && jsonBody.user && jsonBody.user.id) {\n    insomnia.environment.set('user_id', jsonBody.user.id);\n}"
+        },
+        {
+            "_id": "fld_category",
+            "_type": "request_group",
+            "parentId": "wrk_prisma",
+            "name": "Category",
+            "description": "(Precisa de Authorization: Bearer {{ _.token }})",
+            "preRequestScript": "const atob = require('atob');\n\nconst jwtWillExpireSoon = (token, skewSeconds = 60) => {\n    if (!token || typeof token !== 'string') return true;\n\n    const parts = token.split('.');\n    if (parts.length !== 3) return true;\n\n    try {\n        const payloadB64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');\n        const json = atob(payloadB64);\n        const payload = JSON.parse(json);\n\n        if (!payload || typeof payload.exp !== 'number') return true;\n\n        const nowSeconds = Math.floor(Date.now() / 1000);\n        return (payload.exp - nowSeconds) <= skewSeconds;\n    } catch (e) {\n        return true;\n    }\n};\n\nconst baseUrl = insomnia.environment.get('base_url');\nconst email = insomnia.environment.get('auth_email');\nconst password = insomnia.environment.get('auth_password');\nconst currentToken = insomnia.environment.get('token');\n\nif (!baseUrl || !email || !password) {\n    return;\n}\n\nif (!jwtWillExpireSoon(currentToken, 60)) {\n    return;\n}\n\nconst loginResponse = await new Promise((resolve, reject) => {\n    insomnia.sendRequest(\n        {\n            url: `${baseUrl}/api/Auth`,\n            method: 'POST',\n            headers: { 'Content-Type': 'application/json' },\n            body: { mimeType: 'application/json', text: JSON.stringify({ email, password }) },\n        },\n        (err, resp) => (err ? reject(err) : resolve(resp))\n    );\n});\n\nlet jsonBody = null;\ntry {\n    jsonBody = loginResponse?.body ? JSON.parse(loginResponse.body) : null;\n} catch (e) {\n    jsonBody = null;\n}\n\nif (jsonBody?.token) {\n    insomnia.environment.set('token', jsonBody.token);\n}\n\nif (jsonBody?.user?.id) {\n    insomnia.environment.set('user_id', jsonBody.user.id);\n}"
+        },
+        {
+            "_id": "req_category_get_all",
+            "_type": "request",
+            "parentId": "fld_category",
+            "name": "Get All",
+            "method": "GET",
+            "url": "{{ _.base_url }}/api/Category",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{ _.token }}"
+                }
+            ]
+        },
+        {
+            "_id": "req_category_get_by_id",
+            "_type": "request",
+            "parentId": "fld_category",
+            "name": "Get By Id",
+            "method": "GET",
+            "url": "{{ _.base_url }}/api/Category/{{ _.category_id }}",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{ _.token }}"
+                }
+            ]
+        },
+        {
+            "_id": "req_category_create",
+            "_type": "request",
+            "parentId": "fld_category",
+            "name": "Create",
+            "method": "POST",
+            "url": "{{ _.base_url }}/api/Category",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{ _.token }}"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n  \"name\": \"Salário\",\n  \"parentCategoryId\": null\n}"
+            }
+        },
+        {
+            "_id": "req_category_update",
+            "_type": "request",
+            "parentId": "fld_category",
+            "name": "Update",
+            "method": "PUT",
+            "url": "{{ _.base_url }}/api/Category/{{ _.category_id }}",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{ _.token }}"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n  \"name\": \"Salário (editado)\",\n  \"parentCategoryId\": null\n}"
+            }
+        },
+        {
+            "_id": "req_category_delete",
+            "_type": "request",
+            "parentId": "fld_category",
+            "name": "Delete",
+            "method": "DELETE",
+            "url": "{{ _.base_url }}/api/Category/{{ _.category_id }}",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{ _.token }}"
+                }
+            ]
+        },
+        {
+            "_id": "fld_misc",
+            "_type": "request_group",
+            "parentId": "wrk_prisma",
+            "name": "Misc",
+            "description": ""
+        },
+        {
+            "_id": "req_swagger",
+            "_type": "request",
+            "parentId": "fld_misc",
+            "name": "Swagger UI",
+            "method": "GET",
+            "url": "{{ _.base_url }}/swagger",
+            "headers": []
+        }
+    ]
+}

@@ -1,6 +1,6 @@
 using backend.Domain.Entities;
 
-namespace backend.Infrastructure.Repositories
+namespace backend.Infrastructure.Repositories.Categories
 {
     public interface ICategoryRepository
     {

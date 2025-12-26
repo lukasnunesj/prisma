@@ -394,5 +394,65 @@ public class CategoryControllerTests : IClassFixture<CustomWebApplicationFactory
     categoriaFilha.Should().NotBeNull();
     categoriaFilha!.ParentCategoryId.Should().Be(categoriaPai.Id);
   }
+
+  [Fact]
+  public async Task Delete_ComSoftDelete_DeveOcultarCategoriaDasConsultas()
+  {
+    // Arrange
+    var token = await GetAuthTokenAsync();
+    SetAuthHeader(token);
+
+    // Criar duas categorias
+    var createDto1 = new CreateCategoryDTO
+    {
+      Name = "Categoria Para Deletar",
+      ParentCategoryId = null
+    };
+
+    var createDto2 = new CreateCategoryDTO
+    {
+      Name = "Categoria Para Manter",
+      ParentCategoryId = null
+    };
+
+    var create1Response = await _client.PostAsJsonAsync("/api/category", createDto1);
+    var create2Response = await _client.PostAsJsonAsync("/api/category", createDto2);
+    
+    var categoria1 = await create1Response.Content.ReadFromJsonAsync<CategoryResponseDto>();
+    var categoria2 = await create2Response.Content.ReadFromJsonAsync<CategoryResponseDto>();
+
+    // Verificar que ambas aparecem na lista
+    var getAllBefore = await _client.GetAsync("/api/category");
+    if (getAllBefore.StatusCode == HttpStatusCode.OK)
+    {
+      var categoriesBefore = await getAllBefore.Content.ReadFromJsonAsync<List<CategoryResponseDto>>();
+      categoriesBefore.Should().NotBeNull();
+      categoriesBefore!.Count.Should().BeGreaterThanOrEqualTo(2);
+    }
+
+    // Act - Deletar a primeira categoria (soft delete)
+    var deleteResponse = await _client.DeleteAsync($"/api/category/{categoria1!.Id}");
+
+    // Assert
+    deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+    // Verificar que a categoria deletada não aparece mais no GetById
+    var getDeletedResponse = await _client.GetAsync($"/api/category/{categoria1.Id}");
+    getDeletedResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+    // Verificar que a categoria não deletada ainda aparece
+    var getKeptResponse = await _client.GetAsync($"/api/category/{categoria2!.Id}");
+    getKeptResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+    // Verificar que na lista GetAll, apenas a categoria não deletada aparece
+    var getAllAfter = await _client.GetAsync("/api/category");
+    if (getAllAfter.StatusCode == HttpStatusCode.OK)
+    {
+      var categoriesAfter = await getAllAfter.Content.ReadFromJsonAsync<List<CategoryResponseDto>>();
+      categoriesAfter.Should().NotBeNull();
+      categoriesAfter!.Should().Contain(c => c.Id == categoria2.Id);
+      categoriesAfter.Should().NotContain(c => c.Id == categoria1.Id);
+    }
+  }
 }
 

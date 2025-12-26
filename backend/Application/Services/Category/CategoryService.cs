@@ -1,5 +1,5 @@
 using backend.Application.DTO;
-using backend.Infrastructure.Repositories;
+using backend.Infrastructure.Repositories.Categories;
 
 namespace backend.Application.Services.Category
 {
