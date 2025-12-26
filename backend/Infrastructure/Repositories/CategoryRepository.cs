@@ -20,6 +20,14 @@ namespace backend.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<IReadOnlyList<Category>> GetAllAsync(Guid userID)
+        {
+            return await _context.Categories
+                            .AsNoTracking()
+                            .Where(x => x.UserId == userID)
+                            .ToListAsync();
+        }
+
         public async Task<Category?> GetByIdAsync(Guid id, Guid userId)
         {
             var category = await _context.Categories.FirstOrDefaultAsync(

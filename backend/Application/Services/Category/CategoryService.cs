@@ -55,7 +55,19 @@ namespace backend.Application.Services.Category
             return true;
         }
 
+        public async Task<IReadOnlyList<CategoryResponseDto?>> GetAllCategoriesAsync(Guid userId)
+        {
+            var categories = await _repository.GetAllAsync(userId);
 
+            return categories.Select(c => new CategoryResponseDto
+            {
+                Id = c.Id,
+                Name = c.Name,
+                ParentCategoryId = c.ParentCategoryId
+            })
+            .ToList();
+
+        }
     }
 
 }

@@ -6,6 +6,7 @@ namespace backend.Infrastructure.Repositories
     {
         Task AddAsync(Category category);
         Task<Category?> GetByIdAsync(Guid id, Guid userID);
+        Task<IReadOnlyList<Category>> GetAllAsync(Guid userID);
         Task UpdateAsync(Category category);
         Task DeleteAsync(Category category);
     }

@@ -14,6 +14,20 @@ namespace backend.Api.Controllers
     {
         private readonly ICategoryService _categoryService = categoryService;
 
+        [HttpGet()]
+        public async Task<ActionResult<List<CategoryResponseDto>>> GetAllAsync()
+        {
+            var userId = User.GetUserId();
+
+            var categories = await _categoryService.GetAllCategoriesAsync(userId);
+            if (categories is null || categories.Count <= 0)
+            {
+                return NotFound("Nenhuma categoria não encontrada!");
+            }
+
+            return Ok(categories);
+        }
+
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<CategoryResponseDto>> GetByIdAsync(Guid id)
         {
