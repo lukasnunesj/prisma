@@ -1,10 +1,10 @@
 namespace backend.Domain.Entities
 {
-    public class Category
+    public class Category : BaseEntity
     {
         public Guid Id { get; private set; }
         public Guid UserId { get; private set; }
-        public string Name { get; private set; }
+        public string Name { get; private set; } = null!;
         public Guid? ParentCategoryId { get; private set; }
 
         protected Category() { } // EF
@@ -19,8 +19,12 @@ namespace backend.Domain.Entities
 
         public void Rename(string name)
         {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Nome não pode ser vazio!");
             Name = name;
+            MarkAsUpdated();
         }
+
 
     }
 }

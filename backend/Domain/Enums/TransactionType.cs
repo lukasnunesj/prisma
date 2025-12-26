@@ -2,7 +2,7 @@ namespace backend.Domain.Enums
 {
     public enum TransactionType
     {
-        INCOME,
-        EXPANSE
+        INCOME = 1,
+        EXPENSE = 2
     }
 }

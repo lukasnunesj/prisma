@@ -2,7 +2,7 @@ namespace backend.Domain.Enums
 {
     public enum ExpenseType
     {
-        FIXED,
-        VARIABLE
+        FIXED = 1,
+        VARIABLE = 2
     }
 }
