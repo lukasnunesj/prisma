@@ -74,6 +74,7 @@ public class CategoryControllerTests : IClassFixture<CustomWebApplicationFactory
     var createDto = new CreateCategoryDTO
     {
       Name = "Categoria Teste",
+      Color = "#FF00FF",
       ParentCategoryId = null
     };
 
@@ -115,6 +116,7 @@ public class CategoryControllerTests : IClassFixture<CustomWebApplicationFactory
     var createDto = new CreateCategoryDTO
     {
       Name = "",
+      Color = "#FF00FF",
       ParentCategoryId = null
     };
 
@@ -135,10 +137,12 @@ public class CategoryControllerTests : IClassFixture<CustomWebApplicationFactory
     var createDto = new CreateCategoryDTO
     {
       Name = "Categoria Teste",
+      Color = "#FF00FF",
       ParentCategoryId = null
     };
 
     var createResponse = await _client.PostAsJsonAsync("/api/category", createDto);
+    createResponse.EnsureSuccessStatusCode();
     var createdCategory = await createResponse.Content.ReadFromJsonAsync<CategoryResponseDto>();
 
     // Act
@@ -190,6 +194,7 @@ public class CategoryControllerTests : IClassFixture<CustomWebApplicationFactory
     var createDto = new CreateCategoryDTO
     {
       Name = "Categoria Original",
+      Color = "#FF00FF",
       ParentCategoryId = null
     };
 
@@ -200,7 +205,7 @@ public class CategoryControllerTests : IClassFixture<CustomWebApplicationFactory
     var updateDto = new UpdateCategoryDTO
     {
       Name = "Categoria Atualizada",
-      ParentCategoryId = null
+      Color = "#FF00FF"
     };
 
     // Act
@@ -232,7 +237,7 @@ public class CategoryControllerTests : IClassFixture<CustomWebApplicationFactory
     var updateDto = new UpdateCategoryDTO
     {
       Name = "Categoria Atualizada",
-      ParentCategoryId = null
+      Color = "#FF00FF"
     };
 
     var idInexistente = Guid.NewGuid();
@@ -251,7 +256,7 @@ public class CategoryControllerTests : IClassFixture<CustomWebApplicationFactory
     var updateDto = new UpdateCategoryDTO
     {
       Name = "Categoria Atualizada",
-      ParentCategoryId = null
+      Color = "#FF00FF"
     };
 
     var id = Guid.NewGuid();
@@ -273,6 +278,7 @@ public class CategoryControllerTests : IClassFixture<CustomWebApplicationFactory
     var createDto = new CreateCategoryDTO
     {
       Name = "Categoria Para Deletar",
+      Color = "#FF00FF",
       ParentCategoryId = null
     };
 
@@ -328,12 +334,14 @@ public class CategoryControllerTests : IClassFixture<CustomWebApplicationFactory
     var createDto1 = new CreateCategoryDTO
     {
       Name = "Categoria 1",
+      Color = "#FF00FF",
       ParentCategoryId = null
     };
 
     var createDto2 = new CreateCategoryDTO
     {
       Name = "Categoria 2",
+      Color = "#FF00FF",
       ParentCategoryId = null
     };
 
@@ -373,6 +381,7 @@ public class CategoryControllerTests : IClassFixture<CustomWebApplicationFactory
     var categoriaPaiDto = new CreateCategoryDTO
     {
       Name = "Categoria Pai",
+      Color = "#FF00FF",
       ParentCategoryId = null
     };
 
@@ -382,6 +391,7 @@ public class CategoryControllerTests : IClassFixture<CustomWebApplicationFactory
     var categoriaFilhaDto = new CreateCategoryDTO
     {
       Name = "Categoria Filha",
+      Color = "#FF00FF",
       ParentCategoryId = categoriaPai!.Id
     };
 
@@ -406,12 +416,14 @@ public class CategoryControllerTests : IClassFixture<CustomWebApplicationFactory
     var createDto1 = new CreateCategoryDTO
     {
       Name = "Categoria Para Deletar",
+      Color = "#FF00FF",
       ParentCategoryId = null
     };
 
     var createDto2 = new CreateCategoryDTO
     {
       Name = "Categoria Para Manter",
+      Color = "#FF00FF",
       ParentCategoryId = null
     };
 

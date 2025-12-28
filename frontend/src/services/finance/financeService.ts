@@ -3,7 +3,6 @@ import {
     mockGastos,
     mockContas,
     mockReservas,
-    mockCategorias,
     mockFormasPagamento,
 } from '@/data/mockData';
 import type {
@@ -15,6 +14,7 @@ import type {
     FormaPagamento,
     DashboardMetrics,
 } from '@/types/finance';
+import { apiClient } from '@/services/apiClient';
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -22,7 +22,7 @@ let entradas = [...mockEntradas];
 let gastos = [...mockGastos];
 let contas = [...mockContas];
 let reservas = [...mockReservas];
-let categorias = [...mockCategorias];
+let categorias: Categoria[] = [];
 let formasPagamento = [...mockFormasPagamento];
 
 const fetchDashboardMetrics = async (mes: number, ano: number): Promise<DashboardMetrics> => {
@@ -81,11 +81,11 @@ const fetchDashboardMetrics = async (mes: number, ano: number): Promise<Dashboar
                 })),
             alocacaoCategorias: categorias
                 .map((cat) => ({
-                    categoria: cat.nome,
+                    categoria: cat.name,
                     valor: gastos
                         .filter((g) => g.mes === mes && g.ano === ano && g.categoriaId === cat.id)
                         .reduce((acc, g) => acc + g.valor, 0),
-                    cor: cat.cor,
+                    cor: cat.color,
                 }))
                 .filter((c) => c.valor > 0),
         },
@@ -95,11 +95,9 @@ const fetchDashboardMetrics = async (mes: number, ano: number): Promise<Dashboar
 export const financeService = {
     entradas: {
         list: async (mes: number, ano: number) => {
-            await delay(200);
             return entradas.filter((e) => e.mes === mes && e.ano === ano);
         },
         add: async (data: Omit<Entrada, 'id' | 'mes' | 'ano'>, mes: number, ano: number) => {
-            await delay(200);
             const newEntrada: Entrada = {
                 ...data,
                 id: Date.now().toString(),
@@ -110,13 +108,11 @@ export const financeService = {
             return newEntrada;
         },
         update: async (data: Entrada) => {
-            await delay(200);
             const index = entradas.findIndex((e) => e.id === data.id);
             if (index !== -1) entradas[index] = data;
             return data;
         },
         remove: async (id: string) => {
-            await delay(200);
             entradas = entradas.filter((e) => e.id !== id);
             return id;
         },
@@ -124,11 +120,9 @@ export const financeService = {
 
     gastos: {
         list: async (mes: number, ano: number) => {
-            await delay(200);
             return gastos.filter((g) => g.mes === mes && g.ano === ano);
         },
         add: async (data: Omit<Gasto, 'id' | 'mes' | 'ano'>, mes: number, ano: number) => {
-            await delay(200);
             const newGasto: Gasto = {
                 ...data,
                 id: Date.now().toString(),
@@ -139,13 +133,11 @@ export const financeService = {
             return newGasto;
         },
         update: async (data: Gasto) => {
-            await delay(200);
             const index = gastos.findIndex((g) => g.id === data.id);
             if (index !== -1) gastos[index] = data;
             return data;
         },
         remove: async (id: string) => {
-            await delay(200);
             gastos = gastos.filter((g) => g.id !== id);
             return id;
         },
@@ -153,11 +145,9 @@ export const financeService = {
 
     contas: {
         list: async (mes: number, ano: number) => {
-            await delay(200);
             return contas.filter((c) => c.mes === mes && c.ano === ano);
         },
         add: async (data: Omit<Conta, 'id' | 'mes' | 'ano'>, mes: number, ano: number) => {
-            await delay(200);
             const newConta: Conta = {
                 ...data,
                 id: Date.now().toString(),
@@ -168,13 +158,11 @@ export const financeService = {
             return newConta;
         },
         update: async (data: Conta) => {
-            await delay(200);
             const index = contas.findIndex((c) => c.id === data.id);
             if (index !== -1) contas[index] = data;
             return data;
         },
         remove: async (id: string) => {
-            await delay(200);
             contas = contas.filter((c) => c.id !== id);
             return id;
         },
@@ -182,11 +170,9 @@ export const financeService = {
 
     reservas: {
         list: async (mes: number, ano: number) => {
-            await delay(200);
             return reservas.filter((r) => r.mes === mes && r.ano === ano);
         },
         add: async (data: Omit<ReservaInvestimento, 'id' | 'mes' | 'ano'>, mes: number, ano: number) => {
-            await delay(200);
             const newReserva: ReservaInvestimento = {
                 ...data,
                 id: Date.now().toString(),
@@ -197,40 +183,37 @@ export const financeService = {
             return newReserva;
         },
         update: async (data: ReservaInvestimento) => {
-            await delay(200);
             const index = reservas.findIndex((r) => r.id === data.id);
             if (index !== -1) reservas[index] = data;
             return data;
         },
         remove: async (id: string) => {
-            await delay(200);
             reservas = reservas.filter((r) => r.id !== id);
             return id;
         },
     },
 
+
     categorias: {
         list: async () => {
-            await delay(200);
+            if (categorias.length === 0) {
+                categorias = await apiClient.get<Categoria[]>('/category');
+            }
             return categorias;
         },
         add: async (data: Omit<Categoria, 'id'>) => {
-            await delay(200);
-            const newCategoria: Categoria = {
-                ...data,
-                id: Date.now().toString(),
-            };
+            const newCategoria = await apiClient.post<Categoria>('/category', data);
             categorias.push(newCategoria);
             return newCategoria;
         },
         update: async (data: Categoria) => {
-            await delay(200);
+            const updated = await apiClient.put<Categoria>(`/category/${data.id}`, data);
             const index = categorias.findIndex((c) => c.id === data.id);
-            if (index !== -1) categorias[index] = data;
-            return data;
+            if (index !== -1) categorias[index] = updated;
+            return updated;
         },
         remove: async (id: string) => {
-            await delay(200);
+            await apiClient.delete(`/category/${id}`);
             categorias = categorias.filter((c) => c.id !== id);
             return id;
         },
@@ -238,11 +221,9 @@ export const financeService = {
 
     formasPagamento: {
         list: async () => {
-            await delay(200);
             return formasPagamento;
         },
         add: async (data: Omit<FormaPagamento, 'id'>) => {
-            await delay(200);
             const newForma: FormaPagamento = {
                 ...data,
                 id: Date.now().toString(),
@@ -251,13 +232,11 @@ export const financeService = {
             return newForma;
         },
         update: async (data: FormaPagamento) => {
-            await delay(200);
             const index = formasPagamento.findIndex((f) => f.id === data.id);
             if (index !== -1) formasPagamento[index] = data;
             return data;
         },
         remove: async (id: string) => {
-            await delay(200);
             formasPagamento = formasPagamento.filter((f) => f.id !== id);
             return id;
         },

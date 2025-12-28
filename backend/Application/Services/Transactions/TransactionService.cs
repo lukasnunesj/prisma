@@ -18,6 +18,8 @@ namespace backend.Application.Services.Transactions
                 createTransactionDTO.ExpenseType,
                 createTransactionDTO.Description,
                 createTransactionDTO.CategoryId,
+                createTransactionDTO.Mes,
+                createTransactionDTO.Ano,
                 createTransactionDTO.IsPaid
             );
 
@@ -47,7 +49,9 @@ namespace backend.Application.Services.Transactions
                     Description = e.Description,
                     ExpenseType = e.ExpenseType,
                     Type = e.Type,
-                    IsPaid = e.IsPaid
+                    IsPaid = e.IsPaid,
+                    Mes = e.Mes,
+                    Ano = e.Ano
                 })
             ];
         }
@@ -65,7 +69,9 @@ namespace backend.Application.Services.Transactions
                 Description = transaction.Description,
                 ExpenseType = transaction.ExpenseType,
                 Type = transaction.Type,
-                IsPaid = transaction.IsPaid
+                IsPaid = transaction.IsPaid,
+                Mes = transaction.Mes,
+                Ano = transaction.Ano
             };
         }
 
@@ -75,14 +81,14 @@ namespace backend.Application.Services.Transactions
             if (transaction is null) return false;
 
             transaction.ChangeAmount(updateTransactionDTO.Amount);
-            transaction.ChangeCategory(updateTransactionDTO.CategoryId);
+            transaction.ChangeCategory(updateTransactionDTO.CategoryId ?? Guid.Empty);
             transaction.ChangeDescription(updateTransactionDTO.Description);
             transaction.ChangeTransactionDate(updateTransactionDTO.Date);
             if (updateTransactionDTO.IsPaid)
                 transaction.MarkAsPayed();
             else
                 transaction.MarkAsUnpayed();
-
+            transaction.ChangePeriod(updateTransactionDTO.Mes, updateTransactionDTO.Ano);
             await _transactionRepository.UpdateAsync(transaction);
             return true;
         }

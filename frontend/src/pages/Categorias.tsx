@@ -26,29 +26,29 @@ const Categorias = () => {
 
   const columns: Column<Categoria>[] = [
     {
-      key: 'nome',
+      key: 'name',
       header: 'Nome',
       type: 'text',
     },
     {
-      key: 'cor',
+      key: 'color',
       header: 'Cor',
       width: '100px',
       type: 'color',
     },
     {
-      key: 'icone',
+      key: 'icon',
       header: 'Ícone',
       width: '120px',
       type: 'text',
-      format: (v) => v || '-',
+      format: (v: string) => v || '-',
     },
   ];
 
   const emptyTemplate: Omit<Categoria, 'id'> = {
-    nome: '',
-    cor: '#2D7A6E',
-    icone: '',
+    name: '',
+    color: '#2D7A6E',
+    icon: '',
   };
 
   return (

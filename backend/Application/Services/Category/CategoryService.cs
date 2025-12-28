@@ -12,6 +12,8 @@ namespace backend.Application.Services.Category
             var category = new Domain.Entities.Category(
                 userId,
                 createCategoryDTO.Name,
+                createCategoryDTO.Color,
+                createCategoryDTO.Icon,
                 createCategoryDTO.ParentCategoryId
             );
             await _repository.AddAsync(category);
@@ -28,6 +30,8 @@ namespace backend.Application.Services.Category
                 {
                     Id = category.Id,
                     Name = category.Name,
+                    Color = category.Color,
+                    Icon = category.Icon,
                     ParentCategoryId = category.ParentCategoryId
                 };
         }

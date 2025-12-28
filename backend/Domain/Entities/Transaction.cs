@@ -11,7 +11,9 @@ namespace backend.Domain.Entities
         public TransactionType Type { get; private set; }
         public ExpenseType? ExpenseType { get; private set; }
         public string Description { get; private set; } = null!;
-        public Guid CategoryId { get; private set; }
+        public Guid? CategoryId { get; private set; }
+        public int Mes { get; private set; }
+        public int Ano { get; private set; }
         public bool IsPaid { get; private set; } = false;
 
         protected Transaction()
@@ -25,7 +27,9 @@ namespace backend.Domain.Entities
             TransactionType type,
             ExpenseType? expenseType,
             string description,
-            Guid categoryId,
+            Guid? categoryId,
+            int mes,
+            int ano,
             bool isPaid
         )
         {
@@ -36,6 +40,8 @@ namespace backend.Domain.Entities
             ExpenseType = expenseType;
             Description = description;
             CategoryId = categoryId;
+            Mes = mes;
+            Ano = ano;
             IsPaid = isPaid;
         }
 
@@ -69,6 +75,13 @@ namespace backend.Domain.Entities
 
             CategoryId = categoryId;
             MarkAsUpdated();
+        }
+
+        public void ChangePeriod(int mes, int ano)
+        {
+            if (mes < 1 || mes > 12) throw new ArgumentException("Mês Inválido!");
+            Mes = mes;
+            Ano = ano;
         }
 
         public void MarkAsPayed()

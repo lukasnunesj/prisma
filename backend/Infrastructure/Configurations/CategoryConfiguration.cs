@@ -12,6 +12,8 @@ namespace backend.Infrastructure.Configurations
       builder.HasKey(e => e.Id);
       builder.Property(e => e.Id).ValueGeneratedNever();
       builder.Property(e => e.Name).IsRequired().HasMaxLength(200);
+      builder.Property(e => e.Color).IsRequired().HasMaxLength(7);
+      builder.Property(e => e.Icon).HasMaxLength(200);
       builder.Property(e => e.UserId).IsRequired();
 
       // Relacionamento self-referencial para categorias pai/filho

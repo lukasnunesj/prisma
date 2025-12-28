@@ -87,6 +87,20 @@ public class SecurityTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     [Fact]
+    public async Task Refresh_SemCsrf_DeveRetornarUnauthorized()
+    {
+        var response = await _client.PostAsync("/api/auth/refresh", null);
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Logout_SemCsrf_DeveRetornarUnauthorized()
+    {
+        var response = await _client.PostAsync("/api/auth/logout", null);
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
     public async Task CategoryEndpoints_ComTokenValido_DevemFuncionar()
     {
         // Arrange - Criar usuário e obter token

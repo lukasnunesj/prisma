@@ -28,6 +28,7 @@ export interface Column<T> {
   type?: 'text' | 'number' | 'date' | 'select' | 'checkbox' | 'color';
   options?: Array<{ value: string; label: string }>;
   render?: (value: unknown, row: T, onChange: (value: unknown) => void) => React.ReactNode;
+  format?: (value: unknown) => string;
 }
 
 interface EditableTableProps<T extends { id: string }> {

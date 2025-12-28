@@ -1,14 +1,14 @@
 import type { Categoria, FormaPagamento, Entrada, Gasto, Conta, ReservaInvestimento, DashboardMetrics } from '@/types/finance';
 
 export const mockCategorias: Categoria[] = [
-  { id: '1', nome: 'Alimentação', cor: '#2D7A6E', icone: 'utensils' },
-  { id: '2', nome: 'Transporte', cor: '#4A90A4', icone: 'car' },
-  { id: '3', nome: 'Moradia', cor: '#6B8E23', icone: 'home' },
-  { id: '4', nome: 'Saúde', cor: '#DC143C', icone: 'heart' },
-  { id: '5', nome: 'Educação', cor: '#4169E1', icone: 'book' },
-  { id: '6', nome: 'Lazer', cor: '#FF8C00', icone: 'gamepad' },
-  { id: '7', nome: 'Academia', cor: '#8B4513', icone: 'dumbbell' },
-  { id: '8', nome: 'Vestuário', cor: '#9932CC', icone: 'shirt' },
+  { id: '1', name: 'Alimentação', color: '#2D7A6E', icon: 'utensils' },
+  { id: '2', name: 'Transporte', color: '#4A90A4', icon: 'car' },
+  { id: '3', name: 'Moradia', color: '#6B8E23', icon: 'home' },
+  { id: '4', name: 'Saúde', color: '#DC143C', icon: 'heart' },
+  { id: '5', name: 'Educação', color: '#4169E1', icon: 'book' },
+  { id: '6', name: 'Lazer', color: '#FF8C00', icon: 'gamepad' },
+  { id: '7', name: 'Academia', color: '#8B4513', icon: 'dumbbell' },
+  { id: '8', name: 'Vestuário', color: '#9932CC', icon: 'shirt' },
 ];
 
 export const mockFormasPagamento: FormaPagamento[] = [
@@ -49,30 +49,30 @@ export const getMockMetrics = (mes: number, ano: number): DashboardMetrics => {
   const totalEntradas = mockEntradas
     .filter(e => e.mes === mes && e.ano === ano)
     .reduce((acc, e) => acc + e.valor, 0);
-  
+
   const totalGastos = mockGastos
     .filter(g => g.mes === mes && g.ano === ano)
     .reduce((acc, g) => acc + g.valor, 0);
-  
+
   const totalContas = mockContas
     .filter(c => c.mes === mes && c.ano === ano)
     .reduce((acc, c) => acc + c.valor, 0);
-  
+
   const totalReservas = mockReservas
     .filter(r => r.mes === mes && r.ano === ano)
     .reduce((acc, r) => acc + r.valor, 0);
-  
+
   const totalDebito = mockGastos
     .filter(g => g.mes === mes && g.ano === ano && ['1', '3'].includes(g.formaPagamentoId))
     .reduce((acc, g) => acc + g.valor, 0);
-  
+
   const totalCredito = mockGastos
     .filter(g => g.mes === mes && g.ano === ano && ['2', '4'].includes(g.formaPagamentoId))
     .reduce((acc, g) => acc + g.valor, 0);
-  
+
   const saidas = totalGastos + totalContas;
   const restante = totalEntradas - saidas - totalReservas;
-  
+
   return {
     totais: {
       entradas: totalEntradas,
@@ -99,11 +99,11 @@ export const getMockMetrics = (mes: number, ano: number): DashboardMetrics => {
           pago: c.pago,
         })),
       alocacaoCategorias: mockCategorias.map(cat => ({
-        categoria: cat.nome,
+        categoria: cat.name,
         valor: mockGastos
           .filter(g => g.mes === mes && g.ano === ano && g.categoriaId === cat.id)
           .reduce((acc, g) => acc + g.valor, 0),
-        cor: cat.cor,
+        cor: cat.color,
       })).filter(c => c.valor > 0),
     },
   };

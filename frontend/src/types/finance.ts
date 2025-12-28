@@ -42,9 +42,9 @@ export interface ReservaInvestimento {
 
 export interface Categoria {
   id: string;
-  nome: string;
-  cor: string;
-  icone?: string;
+  name: string;
+  color: string;
+  icon?: string;
 }
 
 export interface FormaPagamento {

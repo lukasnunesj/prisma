@@ -14,6 +14,8 @@ interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<boolean>;
+  setToken: (token: string | null) => void;
+  setUser: (user: User | null) => void;
   logout: () => void;
 }
 
@@ -26,36 +28,37 @@ interface MonthNavigationState {
 }
 
 export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      user: null,
-      token: null,
-      isAuthenticated: false,
-      login: async (email: string, password: string) => {
-        try {
-          const result = await authService.login({ email, password });
-          set({
-            user: result.user,
-            token: result.token,
-            isAuthenticated: true,
-          });
-          return true;
-        } catch (_err) {
-          return false;
-        }
-      },
-      logout: () => {
+  (set) => ({
+    user: null,
+    token: null,
+    isAuthenticated: false,
+    login: async (email: string, password: string) => {
+      try {
+        const result = await authService.login({ email, password });
         set({
-          user: null,
-          token: null,
-          isAuthenticated: false,
+          user: result.user,
+          token: result.token,
+          isAuthenticated: true,
         });
-      },
-    }),
-    {
-      name: 'finance-auth',
-    }
-  )
+        return true;
+      } catch (_err) {
+        return false;
+      }
+    },
+    setToken: (token) => set({ token, isAuthenticated: !!token }),
+    setUser: (user) => set({ user }),
+    logout: () => {
+      // best-effort: revoga refresh token no servidor e limpa cookies
+      authService.logout().catch(() => {
+        // ignore
+      });
+      set({
+        user: null,
+        token: null,
+        isAuthenticated: false,
+      });
+    },
+  })
 );
 
 export const useMonthNavigationStore = create<MonthNavigationState>()(

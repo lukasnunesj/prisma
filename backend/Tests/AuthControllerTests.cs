@@ -114,7 +114,7 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory>
         };
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/auth", loginDto);
+        var response = await _client.PostAsJsonAsync("/api/auth/login", loginDto);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -135,7 +135,7 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory>
         };
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/auth", loginDto);
+        var response = await _client.PostAsJsonAsync("/api/auth/login", loginDto);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -162,7 +162,7 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory>
         };
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/auth", loginDto);
+        var response = await _client.PostAsJsonAsync("/api/auth/login", loginDto);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);

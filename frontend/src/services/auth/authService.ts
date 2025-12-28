@@ -10,30 +10,42 @@ export interface LoginRequest {
     password: string;
 }
 
-export interface LoginResponse {
+export interface AuthResponse {
     user: AuthUser;
     token: string;
+    expiration: string;
 }
 
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+import { apiClient } from '@/services/apiClient';
+
+export interface RegisterRequest {
+    name: string;
+    email: string;
+    password: string;
+}
+
+export interface ChangePasswordRequest {
+    currentPassword: string;
+    newPassword: string;
+}
+
+// Refresh returns same structure as AuthResponse
+export type RefreshResponse = AuthResponse;
 
 export const authService = {
-    login: async ({ email, password }: LoginRequest): Promise<LoginResponse> => {
-        await delay(800);
-
-        if (!email || password.length < 4) {
-            throw new Error('INVALID_CREDENTIALS');
-        }
-
-        const user: AuthUser = {
-            id: '1',
-            name: email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1),
-            email,
-            avatar: undefined,
-        };
-
-        const token = `mock-jwt-token-${Date.now()}`;
-
-        return { user, token };
+    login: async ({ email, password }: LoginRequest): Promise<AuthResponse> => {
+        return apiClient.post<AuthResponse>('/auth/login', { email, password });
+    },
+    register: async ({ name, email, password }: RegisterRequest): Promise<AuthResponse> => {
+        return apiClient.post<AuthResponse>('/auth/register', { name, email, password });
+    },
+    refresh: async (): Promise<AuthResponse> => {
+        return apiClient.post<AuthResponse>('/auth/refresh');
+    },
+    logout: async (): Promise<void> => {
+        await apiClient.post<void>('/auth/logout');
+    },
+    changePassword: async (body: ChangePasswordRequest): Promise<void> => {
+        await apiClient.post<void>('/auth/change-password', body);
     },
 };

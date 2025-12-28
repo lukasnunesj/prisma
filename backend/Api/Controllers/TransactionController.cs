@@ -11,7 +11,7 @@ namespace backend.Api.Controllers
     [Authorize]
     public class TransactionController(ITransactionService transactionService) : ControllerBase
     {
-        private ITransactionService _transactionService = transactionService;
+        private readonly ITransactionService _transactionService = transactionService;
 
         [HttpGet()]
         public async Task<ActionResult<List<TransactionResponseDTO>>> GetAllAsync()

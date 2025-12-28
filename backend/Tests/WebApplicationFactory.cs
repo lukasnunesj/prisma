@@ -19,7 +19,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<backend.Program
                 { "JwtSettings:SecretKey", "SuaChaveSecretaSuperSeguraComPeloMenos32Caracteres!" },
                 { "JwtSettings:Issuer", "GerenteContas" },
                 { "JwtSettings:Audience", "GerenteContasUsers" },
-                { "JwtSettings:ExpirationInMinutes", "30" }
+                { "JwtSettings:ExpirationInMinutes", "30" },
+                { "JwtSettings:RefreshExpirationInDays", "7" }
         });
     });
 

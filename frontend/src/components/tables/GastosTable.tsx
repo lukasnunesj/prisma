@@ -16,8 +16,8 @@ export const GastosTable = () => {
       key: 'categoriaId',
       header: 'Categoria',
       type: 'select',
-      options: categorias.map(c => ({ value: c.id, label: c.nome })),
-      format: (v) => categorias.find(c => c.id === v)?.nome || '-',
+      options: categorias.map(c => ({ value: c.id, label: c.name })),
+      format: (v) => categorias.find(c => c.id === v)?.name || '-',
     },
     {
       key: 'formaPagamentoId',
