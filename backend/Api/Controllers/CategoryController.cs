@@ -22,7 +22,7 @@ namespace backend.Api.Controllers
             var categories = await _categoryService.GetAllCategoriesAsync(userId);
             if (categories is null || categories.Count <= 0)
             {
-                return NotFound("Nenhuma categoria não encontrada!");
+                return NotFound("Nenhuma categoria encontrada!");
             }
 
             return Ok(categories);

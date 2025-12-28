@@ -1,0 +1,283 @@
+Padrão atual (frontend -> backend) - Flourish Finance Hub
+
+Observação:
+- No momento, as chamadas estão centralizadas em serviços, mas ainda usam dados mockados (simulando backend).
+- Tipos base extraídos de src/types/finance.ts.
+
+========================
+Sessão: AUTH
+========================
+
+1) authService.login
+- Local: src/services/auth/authService.ts
+- Request (LoginRequest):
+  {
+    email: string;
+    password: string;
+  }
+- Response (LoginResponse):
+  {
+    user: {
+      id: string;
+      name: string;
+      email: string;
+      avatar?: string;
+    };
+    token: string;
+  }
+
+========================
+Sessão: FINANCE
+========================
+
+Entradas
+
+2) financeService.entradas.list
+- Params:
+  mes: number
+  ano: number
+- Request: (sem body)
+- Response: Entrada[]
+  Entrada {
+    id: string;
+    nome: string;
+    valor: number;
+    porcentagem?: number;
+    mes: number;
+    ano: number;
+  }
+
+3) financeService.entradas.add
+- Params:
+  mes: number
+  ano: number
+- Request: Omit<Entrada, 'id' | 'mes' | 'ano'>
+  {
+    nome: string;
+    valor: number;
+    porcentagem?: number;
+  }
+- Response: Entrada
+
+4) financeService.entradas.update
+- Request: Entrada
+- Response: Entrada
+
+5) financeService.entradas.remove
+- Params:
+  id: string
+- Response: string (id removido)
+
+Gastos
+
+6) financeService.gastos.list
+- Params:
+  mes: number
+  ano: number
+- Request: (sem body)
+- Response: Gasto[]
+  Gasto {
+    id: string;
+    categoriaId: string;
+    formaPagamentoId: string;
+    valor: number;
+    data: string;
+    essencial: boolean;
+    descricao?: string;
+    mes: number;
+    ano: number;
+  }
+
+7) financeService.gastos.add
+- Params:
+  mes: number
+  ano: number
+- Request: Omit<Gasto, 'id' | 'mes' | 'ano'>
+  {
+    categoriaId: string;
+    formaPagamentoId: string;
+    valor: number;
+    data: string;
+    essencial: boolean;
+    descricao?: string;
+  }
+- Response: Gasto
+
+8) financeService.gastos.update
+- Request: Gasto
+- Response: Gasto
+
+9) financeService.gastos.remove
+- Params:
+  id: string
+- Response: string (id removido)
+
+Contas
+
+10) financeService.contas.list
+- Params:
+  mes: number
+  ano: number
+- Request: (sem body)
+- Response: Conta[]
+  Conta {
+    id: string;
+    nome: string;
+    planejado: number;
+    valor: number;
+    dataPago?: string;
+    pago: boolean;
+    mes: number;
+    ano: number;
+  }
+
+11) financeService.contas.add
+- Params:
+  mes: number
+  ano: number
+- Request: Omit<Conta, 'id' | 'mes' | 'ano'>
+  {
+    nome: string;
+    planejado: number;
+    valor: number;
+    dataPago?: string;
+    pago: boolean;
+  }
+- Response: Conta
+
+12) financeService.contas.update
+- Request: Conta
+- Response: Conta
+
+13) financeService.contas.remove
+- Params:
+  id: string
+- Response: string (id removido)
+
+Reservas/Investimentos
+
+14) financeService.reservas.list
+- Params:
+  mes: number
+  ano: number
+- Request: (sem body)
+- Response: ReservaInvestimento[]
+  ReservaInvestimento {
+    id: string;
+    nome: string;
+    tipo: 'reserva' | 'investimento';
+    valor: number;
+    data: string;
+    mes: number;
+    ano: number;
+  }
+
+15) financeService.reservas.add
+- Params:
+  mes: number
+  ano: number
+- Request: Omit<ReservaInvestimento, 'id' | 'mes' | 'ano'>
+  {
+    nome: string;
+    tipo: 'reserva' | 'investimento';
+    valor: number;
+    data: string;
+  }
+- Response: ReservaInvestimento
+
+16) financeService.reservas.update
+- Request: ReservaInvestimento
+- Response: ReservaInvestimento
+
+17) financeService.reservas.remove
+- Params:
+  id: string
+- Response: string (id removido)
+
+Categorias
+
+18) financeService.categorias.list
+- Request: (sem body)
+- Response: Categoria[]
+  Categoria {
+    id: string;
+    nome: string;
+    cor: string;
+    icone?: string;
+  }
+
+19) financeService.categorias.add
+- Request: Omit<Categoria, 'id'>
+  {
+    nome: string;
+    cor: string;
+    icone?: string;
+  }
+- Response: Categoria
+
+20) financeService.categorias.update
+- Request: Categoria
+- Response: Categoria
+
+21) financeService.categorias.remove
+- Params:
+  id: string
+- Response: string (id removido)
+
+Formas de Pagamento
+
+22) financeService.formasPagamento.list
+- Request: (sem body)
+- Response: FormaPagamento[]
+  FormaPagamento {
+    id: string;
+    nome: string;
+    tipo: 'debito' | 'credito' | 'dinheiro' | 'pix';
+  }
+
+23) financeService.formasPagamento.add
+- Request: Omit<FormaPagamento, 'id'>
+  {
+    nome: string;
+    tipo: 'debito' | 'credito' | 'dinheiro' | 'pix';
+  }
+- Response: FormaPagamento
+
+24) financeService.formasPagamento.update
+- Request: FormaPagamento
+- Response: FormaPagamento
+
+25) financeService.formasPagamento.remove
+- Params:
+  id: string
+- Response: string (id removido)
+
+Dashboard
+
+26) financeService.dashboard.metrics
+- Params:
+  mes: number
+  ano: number
+- Request: (sem body)
+- Response: DashboardMetrics
+  DashboardMetrics {
+    totais: {
+      entradas: number;
+      saidas: number;
+      reservas: number;
+      usoDebito: number;
+      usoCredito: number;
+      restante: number;
+    };
+    comparacaoMesAnterior: {
+      entradas: number;
+      saidas: number;
+      reservas: number;
+      usoDebito: number;
+      usoCredito: number;
+    };
+    graficos: {
+      fluxoContas: Array<{ nome: string; valor: number; planejado: number; pago: boolean }>;
+      alocacaoCategorias: Array<{ categoria: string; valor: number; cor: string }>;
+    };
+  }

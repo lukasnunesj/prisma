@@ -6,7 +6,7 @@ namespace backend.Application.DTO
     public class CreateTransactionDTO : IValidatableObject
     {
         [Required]
-        public DateTime? Date { get; init; }
+        public DateTime Date { get; init; }
 
         [Required]
         [Range(typeof(decimal), "0.01", "999999999999.99", ErrorMessage = "Amount deve ser maior que zero")]
@@ -14,7 +14,7 @@ namespace backend.Application.DTO
 
         [Required]
         [EnumDataType(typeof(TransactionType))]
-        public TransactionType? Type { get; init; }
+        public TransactionType Type { get; init; }
 
         [EnumDataType(typeof(ExpenseType))]
         public ExpenseType? ExpenseType { get; init; }
@@ -25,7 +25,10 @@ namespace backend.Application.DTO
         public string Description { get; init; } = null!;
 
         [Required]
-        public Guid? CategoryId { get; init; }
+        public Guid CategoryId { get; init; }
+
+        [Required]
+        public bool IsPaid { get; init; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
@@ -33,7 +36,7 @@ namespace backend.Application.DTO
             {
                 yield return new ValidationResult(
                     "ExpenseType é obrigatório quando Type é Expense",
-                    new[] { nameof(ExpenseType) }
+                    [nameof(ExpenseType)]
                 );
             }
         }
@@ -42,7 +45,7 @@ namespace backend.Application.DTO
     public class UpdateTransactionDTO
     {
         [Required]
-        public DateTime? Date { get; init; }
+        public DateTime Date { get; init; }
 
         [Required]
         [Range(typeof(decimal), "0.01", "999999999999.99", ErrorMessage = "Amount deve ser maior que zero")]
@@ -54,19 +57,22 @@ namespace backend.Application.DTO
         public string Description { get; init; } = null!;
 
         [Required]
-        public Guid? CategoryId { get; init; }
+        public Guid CategoryId { get; init; }
+
+        [Required]
+        public bool IsPaid { get; init; }
 
     }
 
     public class TransactionResponseDTO
     {
         public Guid Id { get; init; }
-        public DateTime? Date { get; init; }
+        public DateTime Date { get; init; }
         public decimal Amount { get; init; }
-        public TransactionType? Type { get; init; }
+        public TransactionType Type { get; init; }
         public ExpenseType? ExpenseType { get; init; }
         public string Description { get; init; } = null!;
-        public Guid? CategoryId { get; init; }
-
+        public Guid CategoryId { get; init; }
+        public bool IsPaid { get; init; }
     }
 }

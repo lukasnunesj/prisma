@@ -1,5 +1,6 @@
 using backend.Application.Services.Auth;
 using backend.Application.Services.Category;
+using backend.Application.Services.Transactions;
 
 namespace backend.Application.DI
 {
@@ -11,6 +12,7 @@ namespace backend.Application.DI
             // Registrar Services
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ITransactionService, TransactionService>();
 
             return services;
         }

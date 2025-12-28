@@ -12,6 +12,7 @@ namespace backend.Domain.Entities
         public ExpenseType? ExpenseType { get; private set; }
         public string Description { get; private set; } = null!;
         public Guid CategoryId { get; private set; }
+        public bool IsPaid { get; private set; } = false;
 
         protected Transaction()
         {
@@ -24,7 +25,8 @@ namespace backend.Domain.Entities
             TransactionType type,
             ExpenseType? expenseType,
             string description,
-            Guid categoryId
+            Guid categoryId,
+            bool isPaid
         )
         {
             UserId = userId;
@@ -34,6 +36,7 @@ namespace backend.Domain.Entities
             ExpenseType = expenseType;
             Description = description;
             CategoryId = categoryId;
+            IsPaid = isPaid;
         }
 
         public void ChangeDescription(string description)
@@ -65,6 +68,18 @@ namespace backend.Domain.Entities
                 throw new ArgumentException("Categoria inválida.");
 
             CategoryId = categoryId;
+            MarkAsUpdated();
+        }
+
+        public void MarkAsPayed()
+        {
+            IsPaid = true;
+            MarkAsUpdated();
+        }
+
+        public void MarkAsUnpayed()
+        {
+            IsPaid = false;
             MarkAsUpdated();
         }
 

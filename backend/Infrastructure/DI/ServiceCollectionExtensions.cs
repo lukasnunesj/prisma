@@ -1,4 +1,5 @@
 using backend.Infrastructure.Repositories.Categories;
+using backend.Infrastructure.Repositories.Transactions;
 
 namespace backend.Infrastructure.DI
 {
@@ -9,6 +10,7 @@ namespace backend.Infrastructure.DI
         {
             // Registrar repositórios
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<ITransactionRepository, TransactionRepository>();
 
             return services;
         }

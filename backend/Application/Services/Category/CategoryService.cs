@@ -59,13 +59,12 @@ namespace backend.Application.Services.Category
         {
             var categories = await _repository.GetAllAsync(userId);
 
-            return categories.Select(c => new CategoryResponseDto
+            return [.. categories.Select(c => new CategoryResponseDto
             {
                 Id = c.Id,
                 Name = c.Name,
                 ParentCategoryId = c.ParentCategoryId
-            })
-            .ToList();
+            })];
 
         }
     }
