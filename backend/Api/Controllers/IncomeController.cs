@@ -1,4 +1,4 @@
-using backend.Api.Extensions;
+using backend.Api.Services;
 using backend.Application.DTO;
 using backend.Application.Services.Income;
 using Microsoft.AspNetCore.Authorization;
@@ -9,16 +9,15 @@ namespace backend.Api.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class IncomeController(IIncomeService incomeService) : ControllerBase
+    public class IncomeController(IIncomeService incomeService, ICurrentUser currentUser) : ControllerBase
     {
         private readonly IIncomeService _incomeService = incomeService;
+        private readonly ICurrentUser _currentUser = currentUser;
 
-        [HttpGet()]
-        public async Task<ActionResult<IReadOnlyList<IncomeResponseDTO>>> GetAllAsync()
+        [HttpGet("{mes:int}/{ano:int}")]
+        public async Task<ActionResult<IReadOnlyList<IncomeResponseDTO>>> GetAllAsync(int mes, int ano)
         {
-            var userId = User.GetUserId();
-
-            var income = await _incomeService.ListAllIncomeAsync(userId);
+            var income = await _incomeService.ListAllIncomeAsync(_currentUser.UserId, mes, ano);
 
             if (income is null || income.Count <= 0)
             {
@@ -31,11 +30,9 @@ namespace backend.Api.Controllers
         [HttpPost("{mes:int}/{ano:int}")]
         public async Task<ActionResult> AddAsync(int mes, int ano, [FromBody] AddIncomeDTO dto)
         {
-            var userId = User.GetUserId();
-
             if (mes < 1 || mes > 12) return BadRequest("Mes Inválido");
 
-            var income = await _incomeService.AddIncomeAsync(userId, mes, ano, dto);
+            var income = await _incomeService.AddIncomeAsync(_currentUser.UserId, mes, ano, dto);
 
             return CreatedAtAction(
                 nameof(GetByIdAsync),
@@ -47,9 +44,7 @@ namespace backend.Api.Controllers
         [HttpPut()]
         public async Task<ActionResult> PutAsync([FromBody] UpdateIncomeDTO dto)
         {
-            var userId = User.GetUserId();
-
-            var updated = await _incomeService.UdateIncomeAsync(userId, dto);
+            var updated = await _incomeService.UdateIncomeAsync(_currentUser.UserId, dto);
 
             return Ok(updated);
         }
@@ -57,9 +52,7 @@ namespace backend.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAsync(Guid id)
         {
-            var userId = User.GetUserId();
-
-            var deleted = await _incomeService.RemoveIncomeAsync(userId, id);
+            var deleted = await _incomeService.RemoveIncomeAsync(_currentUser.UserId, id);
 
             if (!deleted)
                 return NotFound();
@@ -70,9 +63,7 @@ namespace backend.Api.Controllers
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<IncomeResponseDTO>> GetByIdAsync(Guid id)
         {
-            var userId = User.GetUserId();
-
-            var income = await _incomeService.GetIncomeByIdAsync(userId, id);
+            var income = await _incomeService.GetIncomeByIdAsync(_currentUser.UserId, id);
 
             if (income is null)
                 return NotFound();

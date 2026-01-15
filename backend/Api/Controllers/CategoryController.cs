@@ -1,4 +1,4 @@
-using backend.Api.Extensions;
+using backend.Api.Services;
 using backend.Application.DTO;
 using backend.Application.Services.Category;
 using Microsoft.AspNetCore.Authorization;
@@ -10,16 +10,15 @@ namespace backend.Api.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class CategoryController(ICategoryService categoryService) : ControllerBase
+    public class CategoryController(ICategoryService categoryService, ICurrentUser currentUser) : ControllerBase
     {
         private readonly ICategoryService _categoryService = categoryService;
+        private readonly ICurrentUser _currentUser = currentUser;
 
         [HttpGet()]
         public async Task<ActionResult<List<CategoryResponseDto>>> GetAllAsync()
         {
-            var userId = User.GetUserId();
-
-            var categories = await _categoryService.GetAllCategoriesAsync(userId);
+            var categories = await _categoryService.GetAllCategoriesAsync(_currentUser.UserId);
             if (categories is null || categories.Count <= 0)
             {
                 return NotFound("Nenhuma categoria encontrada!");
@@ -31,9 +30,7 @@ namespace backend.Api.Controllers
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<CategoryResponseDto>> GetByIdAsync(Guid id)
         {
-            var userId = User.GetUserId();
-
-            var category = await _categoryService.GetCategoryById(userId, id);
+            var category = await _categoryService.GetCategoryById(_currentUser.UserId, id);
 
             if (category is null)
             {
@@ -47,9 +44,7 @@ namespace backend.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCategoryDTO createCategoryDTO)
         {
-            var userId = User.GetUserId();
-
-            var id = await _categoryService.CreateCategoryAsync(userId, createCategoryDTO);
+            var id = await _categoryService.CreateCategoryAsync(_currentUser.UserId, createCategoryDTO);
 
             return CreatedAtAction(
                 "GetById",
@@ -62,9 +57,7 @@ namespace backend.Api.Controllers
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCategoryDTO updateCategoryDTO)
         {
-            var userId = User.GetUserId();
-
-            var updated = await _categoryService.UpdateCategoryAsync(userId, id, updateCategoryDTO);
+            var updated = await _categoryService.UpdateCategoryAsync(_currentUser.UserId, id, updateCategoryDTO);
 
             return updated ? NoContent() : NotFound("Categoria não encontrada!");
         }
@@ -72,9 +65,7 @@ namespace backend.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
-            var userId = User.GetUserId();
-
-            var deleted = await _categoryService.DeleteCategoryAsync(userId, id);
+            var deleted = await _categoryService.DeleteCategoryAsync(_currentUser.UserId, id);
 
             if (!deleted)
                 return NotFound();

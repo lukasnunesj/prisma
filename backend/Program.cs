@@ -1,4 +1,5 @@
 using System.Text;
+using backend.Api.DI;
 using backend.Application.DI;
 using backend.Domain.Entities;
 using backend.Infrastructure.Context;
@@ -16,13 +17,14 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddApiServices();
+
 // Configurar DbContext com PostgreSQL
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
-
 
 // Configurar Identity
 builder.Services.AddIdentity<User, IdentityRole<Guid>>(options =>
@@ -87,13 +89,13 @@ builder.Services.AddCors(options =>
         var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
         if (allowedOrigins == null || allowedOrigins.Length == 0)
         {
-            allowedOrigins = new[]
-            {
+            allowedOrigins =
+            [
                 "http://localhost:5173",
                 "https://localhost:5173",
                 "http://localhost:8081",
                 "https://localhost:8081"
-            };
+            ];
         }
 
         policy.WithOrigins(allowedOrigins)

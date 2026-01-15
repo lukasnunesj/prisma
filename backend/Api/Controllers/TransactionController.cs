@@ -1,4 +1,4 @@
-using backend.Api.Extensions;
+using backend.Api.Services;
 using backend.Application.DTO;
 using backend.Application.Services.Transactions;
 using Microsoft.AspNetCore.Authorization;
@@ -9,15 +9,15 @@ namespace backend.Api.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class TransactionController(ITransactionService transactionService) : ControllerBase
+    public class TransactionController(ITransactionService transactionService, ICurrentUser currentUser) : ControllerBase
     {
         private readonly ITransactionService _transactionService = transactionService;
+        private readonly ICurrentUser _currentUser = currentUser;
 
         [HttpGet()]
         public async Task<ActionResult<List<TransactionResponseDTO>>> GetAllAsync()
         {
-            var userId = User.GetUserId();
-            var transactions = await _transactionService.GetAllTransactionsAsync(userId);
+            var transactions = await _transactionService.GetAllTransactionsAsync(_currentUser.UserId);
             if (transactions is null || transactions.Count <= 0)
             {
                 return NotFound("Nenhuma transação encontrada!");
@@ -29,8 +29,7 @@ namespace backend.Api.Controllers
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<TransactionResponseDTO>> GetByIdAsync(Guid id)
         {
-            var userId = User.GetUserId();
-            var transaction = await _transactionService.GetTransactionByIdAsync(id, userId);
+            var transaction = await _transactionService.GetTransactionByIdAsync(id, _currentUser.UserId);
             if (transaction is null)
             {
                 return NotFound("Transação não encontrada!");
@@ -42,17 +41,14 @@ namespace backend.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateTransactionDTO createTransactionDTO)
         {
-            var userId = User.GetUserId();
-            var id = await _transactionService.CreateTransactionAsync(createTransactionDTO, userId);
+            var id = await _transactionService.CreateTransactionAsync(createTransactionDTO, _currentUser.UserId);
             return CreatedAtAction("GetById", new { id }, new TransactionResponseDTO { Id = id });
         }
 
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> Update([FromBody] UpdateTransactionDTO updateTransactionDTO, Guid id)
         {
-            var userId = User.GetUserId();
-
-            var updated = await _transactionService.UpdateTransactionAsync(updateTransactionDTO, id, userId);
+            var updated = await _transactionService.UpdateTransactionAsync(updateTransactionDTO, id, _currentUser.UserId);
 
             return updated ? NoContent() : NotFound("Transação não encontrada!");
         }
@@ -60,8 +56,7 @@ namespace backend.Api.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var userId = User.GetUserId();
-            var deleted = await _transactionService.DeleteTransactionAsync(id, userId);
+            var deleted = await _transactionService.DeleteTransactionAsync(id, _currentUser.UserId);
             return deleted ? NoContent() : NotFound("Transação não encontrada!");
         }
     }

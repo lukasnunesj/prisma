@@ -1,6 +1,6 @@
 using backend.Application.DTO;
 using backend.Application.Services.Auth;
-using backend.Api.Extensions;
+using backend.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,29 +8,30 @@ namespace backend.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController(IAuthService authService) : ControllerBase
+    public class AuthController(IAuthService authService, ICurrentUser currentUser) : ControllerBase
     {
         private readonly IAuthService _authService = authService;
+        private readonly ICurrentUser _currentUser = currentUser;
 
-        private static CookieOptions BuildRefreshCookie(DateTime expires, bool isDevelopment)
+        private static CookieOptions BuildRefreshCookie(DateTime expires, bool isHttps)
         {
             return new CookieOptions
             {
                 HttpOnly = true,
-                Secure = !isDevelopment,
-                SameSite = SameSiteMode.Strict,
+                Secure = isHttps,
+                SameSite = isHttps ? SameSiteMode.None : SameSiteMode.Lax,
                 Expires = expires,
                 Path = "/api/auth"
             };
         }
 
-        private static CookieOptions BuildXsrfCookie(DateTime expires, bool isDevelopment)
+        private static CookieOptions BuildXsrfCookie(DateTime expires, bool isHttps)
         {
             return new CookieOptions
             {
                 HttpOnly = false,
-                Secure = !isDevelopment,
-                SameSite = SameSiteMode.Strict,
+                Secure = isHttps,
+                SameSite = isHttps ? SameSiteMode.None : SameSiteMode.Lax,
                 Expires = expires,
                 Path = "/"
             };
@@ -58,7 +59,7 @@ namespace backend.Api.Controllers
         [HttpGet("csrf")]
         public IActionResult Csrf()
         {
-            var isDev = HttpContext.RequestServices.GetService<IHostEnvironment>()?.IsDevelopment() ?? false;
+            var isHttps = Request.IsHttps;
 
             var config = HttpContext.RequestServices.GetService<IConfiguration>();
             var refreshDaysRaw = config?.GetSection("JwtSettings")["RefreshExpirationInDays"];
@@ -67,7 +68,7 @@ namespace backend.Api.Controllers
                 refreshDays = 7;
 
             var xsrf = CreateXsrfToken();
-            Response.Cookies.Append("XSRF-TOKEN", xsrf, BuildXsrfCookie(DateTime.UtcNow.AddDays(refreshDays), isDev));
+            Response.Cookies.Append("XSRF-TOKEN", xsrf, BuildXsrfCookie(DateTime.UtcNow.AddDays(refreshDays), isHttps));
             return NoContent();
         }
 
@@ -79,11 +80,11 @@ namespace backend.Api.Controllers
                 var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
                 var issued = await _authService.RegisterAsync(registerDTO, ip);
 
-                var isDev = HttpContext.RequestServices.GetService<IHostEnvironment>()?.IsDevelopment() ?? false;
-                Response.Cookies.Append("refresh_token", issued.RefreshToken, BuildRefreshCookie(issued.RefreshTokenExpires, isDev));
+                var isHttps = Request.IsHttps;
+                Response.Cookies.Append("refresh_token", issued.RefreshToken, BuildRefreshCookie(issued.RefreshTokenExpires, isHttps));
 
                 var xsrf = CreateXsrfToken();
-                Response.Cookies.Append("XSRF-TOKEN", xsrf, BuildXsrfCookie(issued.RefreshTokenExpires, isDev));
+                Response.Cookies.Append("XSRF-TOKEN", xsrf, BuildXsrfCookie(issued.RefreshTokenExpires, isHttps));
 
                 return Ok(issued.Response);
             }
@@ -101,11 +102,11 @@ namespace backend.Api.Controllers
                 var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
                 var issued = await _authService.LoginAsync(loginDTO, ip);
 
-                var isDev = HttpContext.RequestServices.GetService<IHostEnvironment>()?.IsDevelopment() ?? false;
-                Response.Cookies.Append("refresh_token", issued.RefreshToken, BuildRefreshCookie(issued.RefreshTokenExpires, isDev));
+                var isHttps = Request.IsHttps;
+                Response.Cookies.Append("refresh_token", issued.RefreshToken, BuildRefreshCookie(issued.RefreshTokenExpires, isHttps));
 
                 var xsrf = CreateXsrfToken();
-                Response.Cookies.Append("XSRF-TOKEN", xsrf, BuildXsrfCookie(issued.RefreshTokenExpires, isDev));
+                Response.Cookies.Append("XSRF-TOKEN", xsrf, BuildXsrfCookie(issued.RefreshTokenExpires, isHttps));
 
                 return Ok(issued.Response);
             }
@@ -135,11 +136,11 @@ namespace backend.Api.Controllers
                 var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
                 var issued = await _authService.RefreshTokenAsync(refreshCookie, ip);
 
-                var isDev = HttpContext.RequestServices.GetService<IHostEnvironment>()?.IsDevelopment() ?? false;
-                Response.Cookies.Append("refresh_token", issued.RefreshToken, BuildRefreshCookie(issued.RefreshTokenExpires, isDev));
+                var isHttps = Request.IsHttps;
+                Response.Cookies.Append("refresh_token", issued.RefreshToken, BuildRefreshCookie(issued.RefreshTokenExpires, isHttps));
 
                 var xsrf = CreateXsrfToken();
-                Response.Cookies.Append("XSRF-TOKEN", xsrf, BuildXsrfCookie(issued.RefreshTokenExpires, isDev));
+                Response.Cookies.Append("XSRF-TOKEN", xsrf, BuildXsrfCookie(issued.RefreshTokenExpires, isHttps));
 
                 return Ok(issued.Response);
             }
@@ -185,9 +186,8 @@ namespace backend.Api.Controllers
             if (!ValidateXsrf())
                 return Unauthorized(new { message = "Unauthorized" });
 
-            var userId = User.GetUserId();
             var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
-            var ok = await _authService.ChangePasswordAsync(userId, dto.CurrentPassword, dto.NewPassword, ip);
+            var ok = await _authService.ChangePasswordAsync(_currentUser.UserId, dto.CurrentPassword, dto.NewPassword, ip);
             if (!ok)
                 return BadRequest(new { message = "Não foi possível alterar a senha" });
 

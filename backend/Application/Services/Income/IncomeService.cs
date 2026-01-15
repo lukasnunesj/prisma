@@ -51,9 +51,9 @@ namespace backend.Application.Services.Income
             };
         }
 
-        public async Task<IReadOnlyList<IncomeResponseDTO>> ListAllIncomeAsync(Guid userId)
+        public async Task<IReadOnlyList<IncomeResponseDTO>> ListAllIncomeAsync(Guid userId, int mes, int ano)
         {
-            var transactions = await _transactionRepository.GetAllAsync(userId);
+            var transactions = await _transactionRepository.GetAllAsync(userId, mes, ano);
             return [.. transactions.Select(e=>new IncomeResponseDTO{
                 Id = e.Id,
                 Amount = e.Amount,

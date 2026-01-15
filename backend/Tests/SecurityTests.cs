@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Net.Http.Headers;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
 namespace backend.Tests;
@@ -91,6 +92,102 @@ public class SecurityTests : IClassFixture<CustomWebApplicationFactory>
     {
         var response = await _client.PostAsync("/api/auth/refresh", null);
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    private static string? GetCookieValueFromSetCookie(HttpResponseMessage response, string cookieName)
+    {
+        if (!response.Headers.TryGetValues("Set-Cookie", out var setCookieValues))
+            return null;
+
+        foreach (var setCookie in setCookieValues)
+        {
+            if (!setCookie.StartsWith(cookieName + "=", StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            var valuePart = setCookie.Substring(cookieName.Length + 1);
+            var semicolonIndex = valuePart.IndexOf(';');
+            return semicolonIndex >= 0 ? valuePart.Substring(0, semicolonIndex) : valuePart;
+        }
+
+        return null;
+    }
+
+    private static string? GetSetCookieHeader(HttpResponseMessage response, string cookieName)
+    {
+        if (!response.Headers.TryGetValues("Set-Cookie", out var setCookieValues))
+            return null;
+
+        foreach (var setCookie in setCookieValues)
+        {
+            if (setCookie.StartsWith(cookieName + "=", StringComparison.OrdinalIgnoreCase))
+                return setCookie;
+        }
+
+        return null;
+    }
+
+    [Fact]
+    public async Task AuthCookies_EmHttps_DevemSerSameSiteNoneESecure()
+    {
+        using var httpsClient = _factory.CreateClient(new WebApplicationFactoryClientOptions
+        {
+            BaseAddress = new Uri("https://localhost")
+        });
+
+        var email = $"teste{Guid.NewGuid()}@teste.com";
+        var password = "Teste123!@#";
+
+        var registerDto = new backend.Application.DTO.RegisterDTO
+        {
+            Name = "Teste User",
+            Email = email,
+            Password = password
+        };
+
+        var registerResponse = await httpsClient.PostAsJsonAsync("/api/auth/register", registerDto);
+        registerResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var refreshCookie = GetSetCookieHeader(registerResponse, "refresh_token");
+        refreshCookie.Should().NotBeNullOrWhiteSpace();
+        refreshCookie!.ToLowerInvariant().Should().Contain("samesite=none");
+        refreshCookie.ToLowerInvariant().Should().Contain("secure");
+
+        var xsrfCookie = GetSetCookieHeader(registerResponse, "XSRF-TOKEN");
+        xsrfCookie.Should().NotBeNullOrWhiteSpace();
+        xsrfCookie!.ToLowerInvariant().Should().Contain("samesite=none");
+        xsrfCookie.ToLowerInvariant().Should().Contain("secure");
+    }
+
+    [Fact]
+    public async Task AuthCookies_EmHttp_DevemSerSameSiteLaxESemSecure()
+    {
+        using var httpClient = _factory.CreateClient(new WebApplicationFactoryClientOptions
+        {
+            BaseAddress = new Uri("http://localhost")
+        });
+
+        var email = $"teste{Guid.NewGuid()}@teste.com";
+        var password = "Teste123!@#";
+
+        var registerDto = new backend.Application.DTO.RegisterDTO
+        {
+            Name = "Teste User",
+            Email = email,
+            Password = password
+        };
+
+        var registerResponse = await httpClient.PostAsJsonAsync("/api/auth/register", registerDto);
+        registerResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var refreshCookie = GetSetCookieHeader(registerResponse, "refresh_token");
+        refreshCookie.Should().NotBeNullOrWhiteSpace();
+        refreshCookie!.ToLowerInvariant().Should().Contain("samesite=lax");
+        refreshCookie.ToLowerInvariant().Should().NotContain("secure");
+
+        var xsrfCookie = GetSetCookieHeader(registerResponse, "XSRF-TOKEN");
+        xsrfCookie.Should().NotBeNullOrWhiteSpace();
+        xsrfCookie!.ToLowerInvariant().Should().Contain("samesite=lax");
+        xsrfCookie.ToLowerInvariant().Should().NotContain("secure");
     }
 
     [Fact]

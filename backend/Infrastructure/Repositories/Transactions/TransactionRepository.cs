@@ -1,4 +1,5 @@
 using backend.Domain.Entities;
+using backend.Domain.Enums;
 using backend.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,12 +21,31 @@ namespace backend.Infrastructure.Repositories.Transactions
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IReadOnlyList<Transaction>> GetAllAsync(Guid userId)
+        public async Task<IReadOnlyList<Transaction>> GetAllAsync(Guid userId, int mes, int ano)
         {
             return await _context.Transactions
                     .AsNoTracking()
-                    .Where(e => e.UserId == userId)
+                    .Where(e => e.UserId == userId
+                    && e.Ano == ano
+                    && e.Mes == mes)
                     .ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<Transaction>> GetAllByTypeAsync(Guid userId, int mes, int ano, TransactionType type, ExpenseType? expenseType)
+        {
+            var query = _context.Transactions
+                .AsNoTracking()
+                .Where(e => e.UserId == userId
+                    && e.Ano == ano
+                    && e.Mes == mes
+                    && e.Type == type);
+
+            if (expenseType.HasValue)
+            {
+                query = query.Where(e => e.ExpenseType == expenseType.Value);
+            }
+
+            return await query.ToListAsync();
         }
 
         public async Task<Transaction?> GetByIdAsync(Guid id, Guid userId)
