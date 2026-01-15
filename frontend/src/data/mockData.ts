@@ -21,8 +21,8 @@ export const mockFormasPagamento: FormaPagamento[] = [
 ];
 
 export const mockEntradas: Entrada[] = [
-  { id: '1', nome: 'Salário', valor: 5000, porcentagem: 100, mes: 12, ano: 2025 },
-  { id: '2', nome: 'Freelance', valor: 794.14, porcentagem: 15.88, mes: 12, ano: 2025 },
+  { id: '1', nome: 'Salário', valor: 5000, data: '2025-12-01', porcentagem: 100, mes: 12, ano: 2025 },
+  { id: '2', nome: 'Freelance', valor: 794.14, data: '2025-12-10', porcentagem: 15.88, mes: 12, ano: 2025 },
 ];
 
 export const mockGastos: Gasto[] = [

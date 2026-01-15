@@ -1,6 +1,6 @@
 import { EditableTable, Column } from './EditableTable';
 import { useEntradas, useAddEntrada, useUpdateEntrada, useDeleteEntrada } from '@/hooks/useFinancialData';
-import { formatCurrency } from '@/utils/formatters';
+import { formatCurrency, formatDateInput } from '@/utils/formatters';
 import type { Entrada } from '@/types/finance';
 
 export const EntradasTable = () => {
@@ -25,6 +25,12 @@ export const EntradasTable = () => {
       format: formatCurrency,
     },
     {
+      key: 'data',
+      header: 'Data',
+      width: '120px',
+      type: 'date',
+    },
+    {
       key: 'porcentagem',
       header: '%',
       width: '80px',
@@ -38,6 +44,7 @@ export const EntradasTable = () => {
   const emptyTemplate: Omit<Entrada, 'id' | 'mes' | 'ano'> = {
     nome: '',
     valor: 0,
+    data: formatDateInput(new Date().toISOString()),
   };
 
   return (

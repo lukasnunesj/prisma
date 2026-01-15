@@ -6,7 +6,7 @@ namespace backend.Domain.Entities
     {
         public Guid Id { get; private set; } = Guid.NewGuid();
         public Guid UserId { get; private set; }
-        public DateTime Date { get; private set; }
+        public DateOnly Date { get; private set; }
         public decimal Amount { get; private set; }
         public TransactionType Type { get; private set; }
         public ExpenseType? ExpenseType { get; private set; }
@@ -22,7 +22,7 @@ namespace backend.Domain.Entities
 
         public Transaction(
             Guid userId,
-            DateTime date,
+            DateOnly date,
             decimal amount,
             TransactionType type,
             ExpenseType? expenseType,
@@ -53,7 +53,7 @@ namespace backend.Domain.Entities
             MarkAsUpdated();
         }
 
-        public void ChangeTransactionDate(DateTime dateTime)
+        public void ChangeTransactionDate(DateOnly dateTime)
         {
             Date = dateTime;
             MarkAsUpdated();

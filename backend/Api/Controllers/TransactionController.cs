@@ -14,10 +14,12 @@ namespace backend.Api.Controllers
         private readonly ITransactionService _transactionService = transactionService;
         private readonly ICurrentUser _currentUser = currentUser;
 
-        [HttpGet()]
-        public async Task<ActionResult<List<TransactionResponseDTO>>> GetAllAsync()
+        [HttpGet("{mes:int}/{ano:int}")]
+        public async Task<ActionResult<List<TransactionResponseDTO>>> GetAllAsync(int mes, int ano)
         {
-            var transactions = await _transactionService.GetAllTransactionsAsync(_currentUser.UserId);
+            if (mes < 1 || mes > 12) return BadRequest("Mes Inválido");
+
+            var transactions = await _transactionService.GetAllTransactionsAsync(_currentUser.UserId, mes, ano);
             if (transactions is null || transactions.Count <= 0)
             {
                 return NotFound("Nenhuma transação encontrada!");

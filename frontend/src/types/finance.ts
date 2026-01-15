@@ -2,6 +2,7 @@ export interface Entrada {
   id: string;
   nome: string;
   valor: number;
+  data: string;
   porcentagem?: number;
   mes: number;
   ano: number;

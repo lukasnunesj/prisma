@@ -4,7 +4,7 @@ namespace backend.Application.DTO
     {
         public string Name { get; init; } = null!;
         public decimal Amount { get; init; }
-        public DateTime Date { get; init; }
+        public DateOnly Date { get; init; }
 
     }
 
@@ -13,7 +13,7 @@ namespace backend.Application.DTO
         public Guid Id { get; init; }
         public string Name { get; init; } = null!;
         public decimal Amount { get; init; }
-        public DateTime Date { get; init; }
+        public DateOnly Date { get; init; }
         public int Mes { get; init; }
         public int Ano { get; init; }
     }
@@ -23,7 +23,7 @@ namespace backend.Application.DTO
         public Guid Id { get; init; }
         public string Name { get; init; } = null!;
         public decimal Amount { get; init; }
-        public DateTime Date { get; init; }
+        public DateOnly Date { get; init; }
         public int Mes { get; init; }
         public int Ano { get; init; }
     }

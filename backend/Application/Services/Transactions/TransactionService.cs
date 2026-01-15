@@ -36,9 +36,9 @@ namespace backend.Application.Services.Transactions
             return true;
         }
 
-        public async Task<IReadOnlyList<TransactionResponseDTO?>> GetAllTransactionsAsync(Guid userId)
+        public async Task<IReadOnlyList<TransactionResponseDTO?>> GetAllTransactionsAsync(Guid userId, int mes, int ano)
         {
-            var transactions = await _transactionRepository.GetAllAsync(userId);
+            var transactions = await _transactionRepository.GetAllAsync(userId, mes, ano);
 
             return [..
                 transactions.Select(e=>new TransactionResponseDTO{

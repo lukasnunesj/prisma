@@ -6,7 +6,7 @@ namespace backend.Application.DTO
     public class CreateTransactionDTO : IValidatableObject
     {
         [Required]
-        public DateTime Date { get; init; }
+        public DateOnly Date { get; init; }
 
         [Required]
         [Range(typeof(decimal), "0.01", "999999999999.99", ErrorMessage = "Amount deve ser maior que zero")]
@@ -48,7 +48,7 @@ namespace backend.Application.DTO
     public class UpdateTransactionDTO
     {
         [Required]
-        public DateTime Date { get; init; }
+        public DateOnly Date { get; init; }
 
         [Required]
         [Range(typeof(decimal), "0.01", "999999999999.99", ErrorMessage = "Amount deve ser maior que zero")]
@@ -74,7 +74,7 @@ namespace backend.Application.DTO
     public class TransactionResponseDTO
     {
         public Guid Id { get; init; }
-        public DateTime Date { get; init; }
+        public DateOnly Date { get; init; }
         public decimal Amount { get; init; }
         public TransactionType Type { get; init; }
         public ExpenseType? ExpenseType { get; init; }

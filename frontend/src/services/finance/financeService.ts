@@ -15,6 +15,7 @@ import type {
     DashboardMetrics,
 } from '@/types/finance';
 import { apiClient } from '@/services/apiClient';
+import { formatDateInput } from '@/utils/formatters';
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -24,6 +25,30 @@ let contas = [...mockContas];
 let reservas = [...mockReservas];
 let categorias: Categoria[] = [];
 let formasPagamento = [...mockFormasPagamento];
+
+type IncomeResponse = {
+    id: string;
+    name: string;
+    amount: number;
+    date: string;
+    mes: number;
+    ano: number;
+};
+
+const mapIncomeToEntrada = (income: IncomeResponse): Entrada => ({
+    id: income.id,
+    nome: income.name,
+    valor: income.amount,
+    data: formatDateInput(income.date),
+    mes: income.mes,
+    ano: income.ano,
+});
+
+const mapEntradaToIncomePayload = (data: Omit<Entrada, 'id' | 'mes' | 'ano'>) => ({
+    name: data.nome,
+    amount: data.valor,
+    date: data.data,
+});
 
 const fetchDashboardMetrics = async (mes: number, ano: number): Promise<DashboardMetrics> => {
     await delay(300);
@@ -95,24 +120,42 @@ const fetchDashboardMetrics = async (mes: number, ano: number): Promise<Dashboar
 export const financeService = {
     entradas: {
         list: async (mes: number, ano: number) => {
-            return entradas.filter((e) => e.mes === mes && e.ano === ano);
+            try {
+                const income = await apiClient.get<IncomeResponse[]>(`/income/${mes}/${ano}`);
+                entradas = income.map(mapIncomeToEntrada);
+                return entradas;
+            } catch (error) {
+                if (error instanceof Error && error.message.includes('Nenhuma Entrada')) {
+                    entradas = [];
+                    return [];
+                }
+                throw error;
+            }
         },
         add: async (data: Omit<Entrada, 'id' | 'mes' | 'ano'>, mes: number, ano: number) => {
-            const newEntrada: Entrada = {
-                ...data,
-                id: Date.now().toString(),
-                mes,
-                ano,
-            };
-            entradas.push(newEntrada);
+            const payload = mapEntradaToIncomePayload(data);
+            const income = await apiClient.post<IncomeResponse>(`/income/${mes}/${ano}`, payload);
+            const newEntrada = mapIncomeToEntrada(income);
+            entradas = [...entradas, newEntrada];
             return newEntrada;
         },
         update: async (data: Entrada) => {
-            const index = entradas.findIndex((e) => e.id === data.id);
-            if (index !== -1) entradas[index] = data;
-            return data;
+            const payload = {
+                id: data.id,
+                ...mapEntradaToIncomePayload(data),
+                mes: data.mes,
+                ano: data.ano,
+            };
+            const updated = await apiClient.put<IncomeResponse | null>('/income', payload);
+            if (!updated) {
+                return data;
+            }
+            const mapped = mapIncomeToEntrada(updated);
+            entradas = entradas.map((row) => (row.id === mapped.id ? mapped : row));
+            return mapped;
         },
         remove: async (id: string) => {
+            await apiClient.delete(`/income/${id}`);
             entradas = entradas.filter((e) => e.id !== id);
             return id;
         },

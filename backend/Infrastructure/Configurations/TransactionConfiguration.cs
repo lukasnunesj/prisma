@@ -45,7 +45,7 @@ namespace backend.Infrastructure.Configurations
 
       // Category
       builder.Property(x => x.CategoryId)
-          .IsRequired();
+          .IsRequired(false);
 
       // Índices úteis
       builder.HasIndex(x => x.UserId);

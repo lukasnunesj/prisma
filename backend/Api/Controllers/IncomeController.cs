@@ -35,7 +35,7 @@ namespace backend.Api.Controllers
             var income = await _incomeService.AddIncomeAsync(_currentUser.UserId, mes, ano, dto);
 
             return CreatedAtAction(
-                nameof(GetByIdAsync),
+                "GetById",
                 new { id = income.Id },
                 income
             );
