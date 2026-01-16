@@ -38,7 +38,7 @@ namespace backend.Domain.Entities
             MarkAsUpdated();
         }
 
-        public void ChangeIcon(string icon)
+        public void ChangeIcon(string? icon)
         {
             Icon = icon;
         }

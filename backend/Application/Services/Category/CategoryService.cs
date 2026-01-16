@@ -43,6 +43,8 @@ namespace backend.Application.Services.Category
             if (category is null) return false;
 
             category.Rename(updateCategoryDTO.Name);
+            category.ChangeColor(updateCategoryDTO.Color);
+            category.ChangeIcon(updateCategoryDTO.Icon);
 
             await _repository.UpdateAsync(category);
 
@@ -67,6 +69,8 @@ namespace backend.Application.Services.Category
             {
                 Id = c.Id,
                 Name = c.Name,
+                Color = c.Color,
+                Icon = c.Icon,
                 ParentCategoryId = c.ParentCategoryId
             })];
 

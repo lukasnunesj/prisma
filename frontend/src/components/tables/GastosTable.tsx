@@ -13,6 +13,12 @@ export const GastosTable = () => {
 
   const columns: Column<Gasto>[] = [
     {
+      key: 'descricao',
+      header: 'Nome',
+      type: 'text',
+      format: (v) => String(v ?? ''),
+    },
+    {
       key: 'categoriaId',
       header: 'Categoria',
       type: 'select',
@@ -36,9 +42,9 @@ export const GastosTable = () => {
     {
       key: 'data',
       header: 'Data',
-      width: '110px',
+      width: '120px',
       type: 'date',
-      format: formatDate,
+      // format: formatDate,
     },
     {
       key: 'essencial',
@@ -49,6 +55,7 @@ export const GastosTable = () => {
   ];
 
   const emptyTemplate: Omit<Gasto, 'id' | 'mes' | 'ano'> = {
+    descricao: '',
     categoriaId: '',
     formaPagamentoId: '',
     valor: 0,

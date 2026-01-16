@@ -250,10 +250,11 @@ export const financeService = {
             return newCategoria;
         },
         update: async (data: Categoria) => {
-            const updated = await apiClient.put<Categoria>(`/category/${data.id}`, data);
+            const updated = await apiClient.put<Categoria | null>(`/category/${data.id}`, data);
+            const resolved = updated ?? data;
             const index = categorias.findIndex((c) => c.id === data.id);
-            if (index !== -1) categorias[index] = updated;
-            return updated;
+            if (index !== -1) categorias[index] = resolved;
+            return resolved;
         },
         remove: async (id: string) => {
             await apiClient.delete(`/category/${id}`);
