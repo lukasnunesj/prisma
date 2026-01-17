@@ -52,7 +52,7 @@ public class IncomeControllerTests : IClassFixture<CustomWebApplicationFactory>
         SetAuthHeader(token);
 
         var response = await _client.GetAsync("/api/income/12/2099");
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class IncomeControllerTests : IClassFixture<CustomWebApplicationFactory>
         var token = await GetAuthTokenAsync();
         SetAuthHeader(token);
 
-        var createDto = new AddIncomeDTO
+        var createDto = new CreateIncomeDTO
         {
             Name = "Salario",
             Amount = 1500.75m,
@@ -77,5 +77,43 @@ public class IncomeControllerTests : IClassFixture<CustomWebApplicationFactory>
         var entradas = await getResponse.Content.ReadFromJsonAsync<List<IncomeResponseDTO>>();
         entradas.Should().NotBeNull();
         entradas!.Should().Contain(e => e.Name == createDto.Name);
+    }
+
+    [Fact]
+    public async Task Update_ComDadosValidos_DeveAtualizarEntradaNoPeriodo()
+    {
+        var token = await GetAuthTokenAsync();
+        SetAuthHeader(token);
+
+        var createDto = new CreateIncomeDTO
+        {
+            Name = "Salario",
+            Amount = 1500.75m,
+            Date = new DateOnly(2099, 12, 5)
+        };
+
+        var createResponse = await _client.PostAsJsonAsync("/api/income/12/2099", createDto);
+        createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        var created = await createResponse.Content.ReadFromJsonAsync<IncomeResponseDTO>();
+        created.Should().NotBeNull();
+
+        var updateDto = new UpdateIncomeDTO
+        {
+            Name = "Salario Atualizado",
+            Amount = 1700.00m,
+            Date = new DateOnly(2099, 12, 10)
+        };
+
+        var updateResponse = await _client.PutAsJsonAsync($"/api/income/{created!.Id}", updateDto);
+        updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var updated = await updateResponse.Content.ReadFromJsonAsync<IncomeResponseDTO>();
+        updated.Should().NotBeNull();
+        updated!.Id.Should().Be(created.Id);
+        updated.Name.Should().Be(updateDto.Name);
+        updated.Amount.Should().Be(updateDto.Amount);
+        updated.Mes.Should().Be(12);
+        updated.Ano.Should().Be(2099);
     }
 }

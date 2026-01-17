@@ -21,14 +21,14 @@ namespace backend.Api.Controllers
 
             if (income is null || income.Count <= 0)
             {
-                return NotFound("Nenhuma Entrada encontrada!");
+                return Ok("Nenhuma Entrada encontrada!");
             }
 
             return Ok(income);
         }
 
         [HttpPost("{mes:int}/{ano:int}")]
-        public async Task<ActionResult> AddAsync(int mes, int ano, [FromBody] AddIncomeDTO dto)
+        public async Task<ActionResult> AddAsync(int mes, int ano, [FromBody] CreateIncomeDTO dto)
         {
             if (mes < 1 || mes > 12) return BadRequest("Mes Inválido");
 
@@ -41,10 +41,10 @@ namespace backend.Api.Controllers
             );
         }
 
-        [HttpPut()]
-        public async Task<ActionResult> PutAsync([FromBody] UpdateIncomeDTO dto)
+        [HttpPut("{id:guid}")]
+        public async Task<ActionResult> PutAsync(Guid id, [FromBody] UpdateIncomeDTO dto)
         {
-            var updated = await _incomeService.UdateIncomeAsync(_currentUser.UserId, dto);
+            var updated = await _incomeService.UdateIncomeAsync(_currentUser.UserId, id, dto);
 
             return Ok(updated);
         }

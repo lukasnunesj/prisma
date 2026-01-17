@@ -16,6 +16,14 @@ const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - 5 
 
 export const MonthNavigator = () => {
   const { selectedMonth, selectedYear, setMonth, setYear, setMonthYear } = useMonthNavigationStore();
+  const today = new Date();
+  const currentMonth = today.getMonth() + 1;
+  const currentYear = today.getFullYear();
+  const isCurrentMonthYear = selectedMonth === currentMonth && selectedYear === currentYear;
+
+  const handleGoToToday = () => {
+    setMonthYear(currentMonth, currentYear);
+  };
 
   const handlePrevMonth = () => {
     if (selectedMonth === 1) {
@@ -92,6 +100,12 @@ export const MonthNavigator = () => {
             ))}
           </SelectContent>
         </Select>
+
+        {!isCurrentMonthYear && (
+          <Button variant="outline" size="sm" onClick={handleGoToToday} className="h-9">
+            Hoje
+          </Button>
+        )}
       </div>
     </div>
   );

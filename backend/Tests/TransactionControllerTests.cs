@@ -53,7 +53,7 @@ public class TransactionControllerTests : IClassFixture<CustomWebApplicationFact
         SetAuthHeader(token);
 
         var response = await _client.GetAsync("/api/transaction/12/2099");
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]

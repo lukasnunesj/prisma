@@ -8,15 +8,15 @@ namespace backend.Application.Services.Income
     {
         private readonly ITransactionRepository _transactionRepository = transactionRepository;
 
-        public async Task<IncomeResponseDTO> AddIncomeAsync(Guid userId, int mes, int ano, AddIncomeDTO addIncomeDTO)
+        public async Task<IncomeResponseDTO> AddIncomeAsync(Guid userId, int mes, int ano, CreateIncomeDTO createIncomeDTO)
         {
             var transaction = new Transaction(
                 userId,
-                addIncomeDTO.Date,
-                addIncomeDTO.Amount,
+                createIncomeDTO.Date,
+                createIncomeDTO.Amount,
                 Domain.Enums.TransactionType.INCOME,
                 null,
-                addIncomeDTO.Name,
+                createIncomeDTO.Name,
                 null,
                 mes,
                 ano,
@@ -73,15 +73,14 @@ namespace backend.Application.Services.Income
             return true;
         }
 
-        public async Task<IncomeResponseDTO?> UdateIncomeAsync(Guid userId, UpdateIncomeDTO updateIncomeDTO)
+        public async Task<IncomeResponseDTO?> UdateIncomeAsync(Guid userId, Guid id, UpdateIncomeDTO updateIncomeDTO)
         {
-            var transaction = await _transactionRepository.GetByIdAsync(updateIncomeDTO.Id, userId);
+            var transaction = await _transactionRepository.GetByIdAsync(id, userId);
             if (transaction is null) return null;
 
             transaction.ChangeDescription(updateIncomeDTO.Name);
             transaction.ChangeTransactionDate(updateIncomeDTO.Date);
             transaction.ChangeAmount(updateIncomeDTO.Amount);
-            transaction.ChangePeriod(updateIncomeDTO.Mes, updateIncomeDTO.Ano);
 
             await _transactionRepository.UpdateAsync(transaction);
             return new IncomeResponseDTO

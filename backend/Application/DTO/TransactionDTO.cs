@@ -64,7 +64,6 @@ namespace backend.Application.DTO
         [Required]
         public int Ano { get; init; }
 
-        [Required]
         public Guid? CategoryId { get; init; }
 
         public bool IsPaid { get; init; } = false;

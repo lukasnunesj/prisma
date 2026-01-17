@@ -1,6 +1,6 @@
 using System.Net;
-using System.Net.Http.Json;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using backend.Application.DTO;
 using FluentAssertions;
 using Xunit;
@@ -51,7 +51,7 @@ public class CategoryControllerTests : IClassFixture<CustomWebApplicationFactory
     var response = await _client.GetAsync("/api/category");
 
     // Assert
-    response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    response.StatusCode.Should().Be(HttpStatusCode.OK);
   }
 
   [Fact]
@@ -429,7 +429,7 @@ public class CategoryControllerTests : IClassFixture<CustomWebApplicationFactory
 
     var create1Response = await _client.PostAsJsonAsync("/api/category", createDto1);
     var create2Response = await _client.PostAsJsonAsync("/api/category", createDto2);
-    
+
     var categoria1 = await create1Response.Content.ReadFromJsonAsync<CategoryResponseDto>();
     var categoria2 = await create2Response.Content.ReadFromJsonAsync<CategoryResponseDto>();
 
