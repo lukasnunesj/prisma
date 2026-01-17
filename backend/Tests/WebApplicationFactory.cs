@@ -1,9 +1,9 @@
+using backend.Infrastructure.Context;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using backend.Infrastructure.Context;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace backend.Tests;
 
@@ -20,7 +20,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<backend.Program
                 { "JwtSettings:Issuer", "GerenteContas" },
                 { "JwtSettings:Audience", "GerenteContasUsers" },
                 { "JwtSettings:ExpirationInMinutes", "30" },
-                { "JwtSettings:RefreshExpirationInDays", "7" }
+                { "JwtSettings:RefreshExpirationInDays", "7" },
+                { "GoogleAuth:ClientId", "test-google-client-id" }
         });
     });
 

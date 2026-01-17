@@ -10,6 +10,10 @@ export interface LoginRequest {
     password: string;
 }
 
+export interface GoogleLoginRequest {
+    idToken: string;
+}
+
 export interface AuthResponse {
     user: AuthUser;
     token: string;
@@ -35,6 +39,9 @@ export type RefreshResponse = AuthResponse;
 export const authService = {
     login: async ({ email, password }: LoginRequest): Promise<AuthResponse> => {
         return apiClient.post<AuthResponse>('/auth/login', { email, password });
+    },
+    googleLogin: async ({ idToken }: GoogleLoginRequest): Promise<AuthResponse> => {
+        return apiClient.post<AuthResponse>('/auth/google', { idToken });
     },
     register: async ({ name, email, password }: RegisterRequest): Promise<AuthResponse> => {
         return apiClient.post<AuthResponse>('/auth/register', { name, email, password });

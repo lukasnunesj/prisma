@@ -14,6 +14,7 @@ namespace backend.Application.DI
             // Registrar Services
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IGoogleTokenValidator, GoogleTokenValidator>();
             services.AddScoped<IIncomeService, IncomeService>();
             services.AddScoped<IPaymentMethodService, PaymentMethodService>();
             services.AddScoped<ITransactionService, TransactionService>();

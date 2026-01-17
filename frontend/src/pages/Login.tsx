@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/appStore';
 import { Button } from '@/components/ui/button';
@@ -6,20 +6,80 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Wallet, Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
+import { authService } from '@/services/auth/authService';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login, isAuthenticated } = useAuthStore();
+  const { login, isAuthenticated, setToken, setUser } = useAuthStore();
   const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const googleButtonRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (isAuthenticated) {
       navigate('/dashboard', { replace: true });
     }
   }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      return;
+    }
+
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
+    if (!clientId) {
+      return;
+    }
+
+    const google = window.google;
+    if (!google?.accounts?.id || !googleButtonRef.current) {
+      return;
+    }
+
+    google.accounts.id.initialize({
+      client_id: clientId,
+      callback: async (response) => {
+        if (!response.credential) {
+          toast({
+            title: 'Erro',
+            description: 'Não foi possível autenticar com Google.',
+            variant: 'destructive',
+          });
+          return;
+        }
+
+        setIsLoading(true);
+        try {
+          const result = await authService.googleLogin({ idToken: response.credential });
+          setToken(result.token);
+          setUser(result.user);
+          toast({
+            title: 'Bem-vindo!',
+            description: 'Login com Google realizado com sucesso.',
+          });
+          navigate('/dashboard');
+        } catch (_err) {
+          toast({
+            title: 'Erro no login',
+            description: 'Não foi possível autenticar com Google.',
+            variant: 'destructive',
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      },
+    });
+
+    googleButtonRef.current.innerHTML = '';
+    google.accounts.id.renderButton(googleButtonRef.current, {
+      theme: 'outline',
+      size: 'large',
+      width: 320,
+      text: 'continue_with',
+    });
+  }, [isAuthenticated, navigate, setToken, setUser, toast]);
 
   if (isAuthenticated) {
     return null;
@@ -143,6 +203,19 @@ const Login = () => {
                 </>
               )}
             </Button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="bg-card px-2 text-muted-foreground">ou</span>
+              </div>
+            </div>
+
+            <div className="w-full flex justify-center">
+              <div ref={googleButtonRef} />
+            </div>
           </form>
 
           {/* Demo hint */}

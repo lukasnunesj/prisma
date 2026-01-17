@@ -2,7 +2,10 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using backend.Application.DTO;
+using backend.Application.Services.Auth;
+using backend.Application.Services.Auth.Models;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace backend.Tests;
@@ -16,6 +19,49 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory>
     {
         _factory = factory;
         _client = factory.CreateClient();
+    }
+
+    [Fact]
+    public async Task GoogleLogin_ComTokenValido_DeveRetornarToken()
+    {
+        var client = _factory.WithWebHostBuilder(builder =>
+        {
+            builder.ConfigureServices(services =>
+            {
+                var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IGoogleTokenValidator));
+                if (descriptor != null)
+                    services.Remove(descriptor);
+
+                services.AddScoped<IGoogleTokenValidator>(_ => new FakeGoogleTokenValidator());
+            });
+        }).CreateClient();
+
+        var dto = new GoogleLoginDTO
+        {
+            IdToken = "fake-id-token"
+        };
+
+        var response = await client.PostAsJsonAsync("/api/auth/google", dto);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var authResponse = await response.Content.ReadFromJsonAsync<AuthResponseDTO>();
+        authResponse.Should().NotBeNull();
+        authResponse!.Token.Should().NotBeNullOrEmpty();
+        authResponse.User.Email.Should().Be("teste-google@teste.com");
+    }
+
+    private class FakeGoogleTokenValidator : IGoogleTokenValidator
+    {
+        public Task<GoogleIdTokenPayload> ValidateAsync(string idToken, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(new GoogleIdTokenPayload
+            {
+                Subject = "google-sub-123",
+                Email = "teste-google@teste.com",
+                EmailVerified = true,
+                Name = "Teste Google"
+            });
+        }
     }
 
     [Fact]
@@ -97,7 +143,7 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory>
         // Arrange
         var email = $"teste{Guid.NewGuid()}@teste.com";
         var password = "Teste123!@#";
-        
+
         var registerDto = new RegisterDTO
         {
             Name = "Teste User",

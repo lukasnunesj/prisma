@@ -1,16 +1,20 @@
+using backend.Api.Services;
 using backend.Application.DTO;
 using backend.Application.Services.Auth;
-using backend.Api.Services;
+using backend.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController(IAuthService authService, ICurrentUser currentUser) : ControllerBase
+    public class AuthController(IAuthService authService, IGoogleTokenValidator googleTokenValidator, UserManager<User> userManager, ICurrentUser currentUser) : ControllerBase
     {
         private readonly IAuthService _authService = authService;
+        private readonly IGoogleTokenValidator _googleTokenValidator = googleTokenValidator;
+        private readonly UserManager<User> _userManager = userManager;
         private readonly ICurrentUser _currentUser = currentUser;
 
         private static CookieOptions BuildRefreshCookie(DateTime expires, bool isHttps)
@@ -23,6 +27,56 @@ namespace backend.Api.Controllers
                 Expires = expires,
                 Path = "/api/auth"
             };
+        }
+
+        [HttpPost("google")]
+        public async Task<ActionResult<AuthResponseDTO>> GoogleLogin([FromBody] GoogleLoginDTO dto)
+        {
+            try
+            {
+                var payload = await _googleTokenValidator.ValidateAsync(dto.IdToken);
+                if (!payload.EmailVerified)
+                    return Unauthorized(new { message = "Email do Google não verificado" });
+
+                var email = payload.Email.Trim().ToLowerInvariant();
+                var user = await _userManager.FindByEmailAsync(email);
+
+                if (user == null)
+                {
+                    user = new User
+                    {
+                        UserName = email,
+                        Email = email,
+                        Name = payload.Name ?? email,
+                        EmailConfirmed = true
+                    };
+
+                    var created = await _userManager.CreateAsync(user);
+                    if (!created.Succeeded)
+                        return BadRequest(new { message = "Não foi possível criar usuário" });
+                }
+
+                var logins = await _userManager.GetLoginsAsync(user);
+                if (!logins.Any(l => l.LoginProvider == "Google" && l.ProviderKey == payload.Subject))
+                {
+                    await _userManager.AddLoginAsync(user, new UserLoginInfo("Google", payload.Subject, "Google"));
+                }
+
+                var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
+                var issued = await _authService.IssueTokensForUserAsync(user, ip);
+
+                var isHttps = Request.IsHttps;
+                Response.Cookies.Append("refresh_token", issued.RefreshToken, BuildRefreshCookie(issued.RefreshTokenExpires, isHttps));
+
+                var xsrf = CreateXsrfToken();
+                Response.Cookies.Append("XSRF-TOKEN", xsrf, BuildXsrfCookie(issued.RefreshTokenExpires, isHttps));
+
+                return Ok(issued.Response);
+            }
+            catch (Exception)
+            {
+                return Unauthorized(new { message = "Google token inválido" });
+            }
         }
 
         private static CookieOptions BuildXsrfCookie(DateTime expires, bool isHttps)

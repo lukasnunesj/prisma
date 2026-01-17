@@ -36,7 +36,7 @@ async function request<T>(url: string, options: RequestInit = {}, retry = false)
     });
 
     if (!response.ok) {
-        if (response.status === 401 && !retry && !url.startsWith('/auth/refresh') && !url.startsWith('/auth/login')) {
+        if (response.status === 401 && !retry && !url.startsWith('/auth/refresh') && !url.startsWith('/auth/login') && !url.startsWith('/auth/google')) {
             if (!refreshing) {
                 refreshing = (async () => {
                     try {
