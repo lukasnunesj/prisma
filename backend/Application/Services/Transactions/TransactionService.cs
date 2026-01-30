@@ -18,6 +18,7 @@ namespace backend.Application.Services.Transactions
                 createTransactionDTO.ExpenseType,
                 createTransactionDTO.Description,
                 createTransactionDTO.CategoryId,
+                createTransactionDTO.PaymentMethodId,
                 createTransactionDTO.Mes,
                 createTransactionDTO.Ano,
                 createTransactionDTO.IsPaid
@@ -41,10 +42,12 @@ namespace backend.Application.Services.Transactions
             var transactions = await _transactionRepository.GetAllAsync(userId, mes, ano);
 
             return [..
-                transactions.Select(e=>new TransactionResponseDTO{
+                transactions.Select(e => new TransactionResponseDTO
+                {
                     Id = e.Id,
                     Amount = e.Amount,
                     CategoryId = e.CategoryId,
+                    PaymentMethodId = e.PaymentMethodId,
                     Date = e.Date,
                     Description = e.Description,
                     ExpenseType = e.ExpenseType,
@@ -65,6 +68,7 @@ namespace backend.Application.Services.Transactions
                 Id = transaction.Id,
                 Amount = transaction.Amount,
                 CategoryId = transaction.CategoryId,
+                PaymentMethodId = transaction.PaymentMethodId,
                 Date = transaction.Date,
                 Description = transaction.Description,
                 ExpenseType = transaction.ExpenseType,
@@ -81,9 +85,10 @@ namespace backend.Application.Services.Transactions
             if (transaction is null) return false;
 
             transaction.ChangeAmount(updateTransactionDTO.Amount);
-            transaction.ChangeCategory(updateTransactionDTO.CategoryId ?? Guid.Empty);
+            transaction.ChangeCategory(updateTransactionDTO.CategoryId);
             transaction.ChangeDescription(updateTransactionDTO.Description);
             transaction.ChangeTransactionDate(updateTransactionDTO.Date);
+            transaction.ChangePaymentMethod(updateTransactionDTO.PaymentMethodId);
             if (updateTransactionDTO.IsPaid)
                 transaction.MarkAsPayed();
             else

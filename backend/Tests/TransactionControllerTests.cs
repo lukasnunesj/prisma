@@ -75,6 +75,18 @@ public class TransactionControllerTests : IClassFixture<CustomWebApplicationFact
         var createdCategory = await categoryResponse.Content.ReadFromJsonAsync<CategoryResponseDto>();
         createdCategory.Should().NotBeNull();
 
+        var paymentMethodDto = new CreatePaymentMethodDTO
+        {
+            Name = "Cartão teste",
+            Type = PaymentMethodType.CREDITO
+        };
+
+        var paymentMethodResponse = await _client.PostAsJsonAsync("/api/paymentmethod", paymentMethodDto);
+        paymentMethodResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        var createdPaymentMethod = await paymentMethodResponse.Content.ReadFromJsonAsync<PaymentMethodResponseDTO>();
+        createdPaymentMethod.Should().NotBeNull();
+
         var createDto = new CreateTransactionDTO
         {
             Date = new DateOnly(2099, 12, 20),
@@ -85,6 +97,7 @@ public class TransactionControllerTests : IClassFixture<CustomWebApplicationFact
             Mes = 12,
             Ano = 2099,
             CategoryId = createdCategory!.Id,
+            PaymentMethodId = createdPaymentMethod!.Id,
             IsPaid = false
         };
 
@@ -97,5 +110,6 @@ public class TransactionControllerTests : IClassFixture<CustomWebApplicationFact
         var transactions = await getResponse.Content.ReadFromJsonAsync<List<TransactionResponseDTO>>();
         transactions.Should().NotBeNull();
         transactions!.Count.Should().BeGreaterThan(0);
+        transactions![0].PaymentMethodId.Should().Be(createdPaymentMethod!.Id);
     }
 }

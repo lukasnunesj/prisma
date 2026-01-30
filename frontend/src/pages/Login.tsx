@@ -38,6 +38,9 @@ const Login = () => {
       return;
     }
 
+    const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+    const isDark = document.documentElement.classList.contains('dark') || prefersDark;
+
     google.accounts.id.initialize({
       client_id: clientId,
       callback: async (response) => {
@@ -72,12 +75,17 @@ const Login = () => {
       },
     });
 
+    const rawWidth = googleButtonRef.current.getBoundingClientRect().width;
+    const buttonWidth = Math.min(400, Math.max(260, Math.floor(rawWidth || 320)));
+
     googleButtonRef.current.innerHTML = '';
     google.accounts.id.renderButton(googleButtonRef.current, {
-      theme: 'outline',
+      theme: isDark ? 'filled_black' : 'outline',
       size: 'large',
-      width: 320,
+      width: buttonWidth,
+      shape: 'pill',
       text: 'continue_with',
+      logo_alignment: 'left',
     });
   }, [isAuthenticated, navigate, setToken, setUser, toast]);
 
@@ -213,17 +221,10 @@ const Login = () => {
               </div>
             </div>
 
-            <div className="w-full flex justify-center">
-              <div ref={googleButtonRef} />
+            <div className="w-full">
+              <div ref={googleButtonRef} className="w-full flex justify-center" />
             </div>
           </form>
-
-          {/* Demo hint */}
-          <div className="mt-6 pt-6 border-t border-border">
-            <p className="text-xs text-center text-muted-foreground">
-              Demo: Use qualquer email e senha (mínimo 4 caracteres)
-            </p>
-          </div>
         </div>
 
         {/* Footer */}

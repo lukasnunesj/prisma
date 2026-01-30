@@ -22,7 +22,7 @@ namespace backend.Api.Controllers
             var transactions = await _transactionService.GetAllTransactionsAsync(_currentUser.UserId, mes, ano);
             if (transactions is null || transactions.Count <= 0)
             {
-                return Ok("Nenhuma transação encontrada!");
+                return Ok(new List<TransactionResponseDTO>());
             }
 
             return Ok(transactions);

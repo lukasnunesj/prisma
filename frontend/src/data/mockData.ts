@@ -26,10 +26,10 @@ export const mockEntradas: Entrada[] = [
 ];
 
 export const mockGastos: Gasto[] = [
-  { id: '1', categoriaId: '1', formaPagamentoId: '2', valor: 450.00, data: '2025-12-05', essencial: true, mes: 12, ano: 2025 },
-  { id: '2', categoriaId: '2', formaPagamentoId: '1', valor: 180.50, data: '2025-12-10', essencial: true, mes: 12, ano: 2025 },
-  { id: '3', categoriaId: '6', formaPagamentoId: '2', valor: 250.00, data: '2025-12-15', essencial: false, mes: 12, ano: 2025 },
-  { id: '4', categoriaId: '7', formaPagamentoId: '5', valor: 100.00, data: '2025-12-01', essencial: false, mes: 12, ano: 2025 },
+  { id: '1', categoriaId: '1', formaPagamentoId: '2', valor: 450.00, data: '2025-12-05', mes: 12, ano: 2025 },
+  { id: '2', categoriaId: '2', formaPagamentoId: '1', valor: 180.50, data: '2025-12-10', mes: 12, ano: 2025 },
+  { id: '3', categoriaId: '6', formaPagamentoId: '2', valor: 250.00, data: '2025-12-15', mes: 12, ano: 2025 },
+  { id: '4', categoriaId: '7', formaPagamentoId: '5', valor: 100.00, data: '2025-12-01', mes: 12, ano: 2025 },
 ];
 
 export const mockContas: Conta[] = [

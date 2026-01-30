@@ -3,6 +3,7 @@ using backend.Application.Services.Category;
 using backend.Application.Services.Income;
 using backend.Application.Services.PaymentMethods;
 using backend.Application.Services.Transactions;
+using backend.Application.Services.VariableExpense;
 
 namespace backend.Application.DI
 {
@@ -18,6 +19,7 @@ namespace backend.Application.DI
             services.AddScoped<IIncomeService, IncomeService>();
             services.AddScoped<IPaymentMethodService, PaymentMethodService>();
             services.AddScoped<ITransactionService, TransactionService>();
+            services.AddScoped<IVariableExpenseService, VariableExpenseService>();
 
             return services;
         }

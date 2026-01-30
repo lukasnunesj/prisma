@@ -21,7 +21,7 @@ namespace backend.Api.Controllers
 
             if (income is null || income.Count <= 0)
             {
-                return Ok("Nenhuma Entrada encontrada!");
+                return Ok(Array.Empty<IncomeResponseDTO>());
             }
 
             return Ok(income);

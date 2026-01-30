@@ -20,7 +20,7 @@ namespace backend.Api.Controllers
             var methods = await _paymentMethodService.GetAllAsync(_currentUser.UserId);
             if (methods is null || methods.Count <= 0)
             {
-                return Ok("Nenhuma forma de pagamento encontrada!");
+                return Ok(Array.Empty<PaymentMethodResponseDTO>());
             }
 
             return Ok(methods);

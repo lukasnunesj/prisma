@@ -24,6 +24,24 @@ namespace backend.Application.Services.VariableExpense
             }).ToList();
         }
 
+        public async Task<VariableExpenseResponseDTO> GetVariableExpenseByIdAsync(Guid userId, Guid id)
+        {
+            var transaction = await _transactionRepository.GetByIdAsync(id, userId);
+            if (transaction is null) return null;
+
+            return new VariableExpenseResponseDTO
+            {
+                Id = transaction.Id,
+                Amount = transaction.Amount,
+                Mes = transaction.Mes,
+                Ano = transaction.Ano,
+                Date = transaction.Date,
+                Description = transaction.Description,
+                CategoryId = transaction.CategoryId,
+                PaymentMethodId = transaction.PaymentMethodId
+            };
+        }
+
         public async Task<VariableExpenseResponseDTO> CreateVariableExpenseAsync(Guid userId, CreateVariableExpanseDTO dto, int mes, int ano)
         {
             var transaction = new Transaction(
@@ -34,6 +52,7 @@ namespace backend.Application.Services.VariableExpense
                 ExpenseType.VARIABLE,
                 dto.Description,
                 dto.CategoryId,
+                dto.PaymentMethodId,
                 mes,
                 ano,
                 false
@@ -50,14 +69,34 @@ namespace backend.Application.Services.VariableExpense
                 Date = transaction.Date,
                 Description = transaction.Description,
                 CategoryId = transaction.CategoryId,
-                PaymentMethodId = null,
-                IsEssential = dto.IsEssential
+                PaymentMethodId = transaction.PaymentMethodId
             };
         }
 
-        public Task<VariableExpenseResponseDTO> UpdateVariableExpenseAsync(Guid userId, UpdateVariableExpanseDTO dto)
+        public async Task<VariableExpenseResponseDTO> UpdateVariableExpenseAsync(Guid userId, Guid id, UpdateVariableExpanseDTO dto)
         {
-            throw new NotImplementedException();
+            var transaction = await _transactionRepository.GetByIdAsync(id, userId);
+            if (transaction is null) return null;
+
+            transaction.ChangeAmount(dto.Amount);
+            transaction.ChangeDescription(dto.Description);
+            transaction.ChangeTransactionDate(dto.Date);
+            transaction.ChangeCategory(dto.CategoryId);
+            transaction.ChangePaymentMethod(dto.PaymentMethodId);
+
+            await _transactionRepository.UpdateAsync(transaction);
+
+            return new VariableExpenseResponseDTO
+            {
+                Id = transaction.Id,
+                Amount = transaction.Amount,
+                Mes = transaction.Mes,
+                Ano = transaction.Ano,
+                Date = transaction.Date,
+                Description = transaction.Description,
+                CategoryId = transaction.CategoryId,
+                PaymentMethodId = transaction.PaymentMethodId
+            };
         }
 
         public async Task<bool> DeleteVariableExpenseAsync(Guid userId, Guid id)

@@ -31,6 +31,8 @@ namespace backend.Application.DTO
 
         public Guid? CategoryId { get; init; }
 
+        public Guid? PaymentMethodId { get; init; }
+
         public bool IsPaid { get; init; } = false;
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
@@ -66,6 +68,8 @@ namespace backend.Application.DTO
 
         public Guid? CategoryId { get; init; }
 
+        public Guid? PaymentMethodId { get; init; }
+
         public bool IsPaid { get; init; } = false;
 
     }
@@ -79,6 +83,7 @@ namespace backend.Application.DTO
         public ExpenseType? ExpenseType { get; init; }
         public string Description { get; init; } = null!;
         public Guid? CategoryId { get; init; }
+        public Guid? PaymentMethodId { get; init; }
         public int Mes { get; init; }
         public int Ano { get; init; }
         public bool IsPaid { get; init; } = false;

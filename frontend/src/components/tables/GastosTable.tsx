@@ -46,12 +46,6 @@ export const GastosTable = () => {
       type: 'date',
       // format: formatDate,
     },
-    {
-      key: 'essencial',
-      header: 'Ess.',
-      width: '50px',
-      type: 'checkbox',
-    },
   ];
 
   const emptyTemplate: Omit<Gasto, 'id' | 'mes' | 'ano'> = {
@@ -60,7 +54,6 @@ export const GastosTable = () => {
     formaPagamentoId: '',
     valor: 0,
     data: formatDateInput(new Date().toISOString()),
-    essencial: false,
   };
 
   return (

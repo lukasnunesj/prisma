@@ -322,6 +322,12 @@ namespace backend.Migrations
                     b.Property<int>("Mes")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("PaymentMethodId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("PaymentMethodId1")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
@@ -338,6 +344,10 @@ namespace backend.Migrations
                     b.HasIndex("Date");
 
                     b.HasIndex("IsDeleted");
+
+                    b.HasIndex("PaymentMethodId");
+
+                    b.HasIndex("PaymentMethodId1");
 
                     b.HasIndex("UserId");
 
@@ -501,6 +511,17 @@ namespace backend.Migrations
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("backend.Domain.Entities.PaymentMethod", null)
+                        .WithMany()
+                        .HasForeignKey("PaymentMethodId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("backend.Domain.Entities.PaymentMethod", "PaymentMethod")
+                        .WithMany()
+                        .HasForeignKey("PaymentMethodId1");
+
+                    b.Navigation("PaymentMethod");
                 });
 #pragma warning restore 612, 618
         }

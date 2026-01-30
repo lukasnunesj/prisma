@@ -14,7 +14,6 @@ export interface Gasto {
   formaPagamentoId: string;
   valor: number;
   data: string;
-  essencial: boolean;
   descricao?: string;
   mes: number;
   ano: number;

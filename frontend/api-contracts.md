@@ -131,7 +131,6 @@ type Gasto = {
   formaPagamentoId: string;
   valor: number;
   data: string;
-  essencial: boolean;
   descricao?: string;
   mes: number;
   ano: number;
@@ -157,7 +156,6 @@ type Gasto = {
   formaPagamentoId: string;
   valor: number;
   data: string;
-  essencial: boolean;
   descricao?: string;
 }
 ```

@@ -12,7 +12,6 @@ namespace backend.Application.DTO
         public string Description { get; init; } = null!;
         public int Mes { get; init; }
         public int Ano { get; init; }
-        public bool IsEssential { get; init; } = false;
     }
 
     public class CreateVariableExpanseDTO
@@ -37,8 +36,6 @@ namespace backend.Application.DTO
 
         [Required]
         public int Ano { get; init; }
-
-        public bool IsEssential { get; init; } = false;
     }
 
     public class UpdateVariableExpanseDTO
@@ -57,7 +54,5 @@ namespace backend.Application.DTO
         [MaxLength(500)]
         [DataType(DataType.Text)]
         public string Description { get; init; } = null!;
-
-        public bool IsEssential { get; init; } = false;
     }
 }

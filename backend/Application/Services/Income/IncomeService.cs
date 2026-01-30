@@ -18,6 +18,7 @@ namespace backend.Application.Services.Income
                 null,
                 createIncomeDTO.Name,
                 null,
+                null,
                 mes,
                 ano,
                 false

@@ -12,6 +12,8 @@ namespace backend.Domain.Entities
         public ExpenseType? ExpenseType { get; private set; }
         public string Description { get; private set; } = null!;
         public Guid? CategoryId { get; private set; }
+        public Guid? PaymentMethodId { get; private set; }
+        public PaymentMethod? PaymentMethod { get; private set; }
         public int Mes { get; private set; }
         public int Ano { get; private set; }
         public bool IsPaid { get; private set; } = false;
@@ -28,6 +30,7 @@ namespace backend.Domain.Entities
             ExpenseType? expenseType,
             string description,
             Guid? categoryId,
+            Guid? paymentMethodId,
             int mes,
             int ano,
             bool isPaid
@@ -40,6 +43,7 @@ namespace backend.Domain.Entities
             ExpenseType = expenseType;
             Description = description;
             CategoryId = categoryId;
+            PaymentMethodId = paymentMethodId;
             Mes = mes;
             Ano = ano;
             IsPaid = isPaid;
@@ -68,12 +72,15 @@ namespace backend.Domain.Entities
             MarkAsUpdated();
         }
 
-        public void ChangeCategory(Guid categoryId)
+        public void ChangeCategory(Guid? categoryId)
         {
-            if (categoryId == Guid.Empty)
-                throw new ArgumentException("Categoria inválida.");
-
             CategoryId = categoryId;
+            MarkAsUpdated();
+        }
+
+        public void ChangePaymentMethod(Guid? paymentMethodId)
+        {
+            PaymentMethodId = paymentMethodId;
             MarkAsUpdated();
         }
 

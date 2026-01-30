@@ -23,11 +23,22 @@ namespace backend.Api.Controllers
 
             if (expenses is null || expenses.Count <= 0)
             {
-                return Ok("Nenhum Gasto encontrado!");
+                return Ok(Array.Empty<VariableExpenseResponseDTO>());
             }
 
             return Ok(expenses);
 
+        }
+
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<VariableExpenseResponseDTO>> GetByIdAsync(Guid id)
+        {
+            var expense = await _variableExpenseService.GetVariableExpenseByIdAsync(_currentUser.UserId, id);
+
+            if (expense is null)
+                return NotFound();
+
+            return Ok(expense);
         }
 
         [HttpPost("{mes:int}/{ano:int}")]
@@ -43,6 +54,25 @@ namespace backend.Api.Controllers
                 expenses
             );
 
+        }
+
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> PutAsync(Guid id, [FromBody] UpdateVariableExpanseDTO dto)
+        {
+            var updated = await _variableExpenseService.UpdateVariableExpenseAsync(_currentUser.UserId, id, dto);
+
+            return Ok(updated);
+        }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> DeleteAsync(Guid id)
+        {
+            var deleted = await _variableExpenseService.DeleteVariableExpenseAsync(_currentUser.UserId, id);
+
+            if (!deleted)
+                return NotFound();
+
+            return NoContent();
         }
     }
 }
