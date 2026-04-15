@@ -1,6 +1,9 @@
 using backend.Application.Services.Auth;
 using backend.Application.Services.Category;
+using backend.Application.Services.Dashboard;
+using backend.Application.Services.FixedExpense;
 using backend.Application.Services.Income;
+using backend.Application.Services.Investments;
 using backend.Application.Services.PaymentMethods;
 using backend.Application.Services.Transactions;
 using backend.Application.Services.VariableExpense;
@@ -20,6 +23,9 @@ namespace backend.Application.DI
             services.AddScoped<IPaymentMethodService, PaymentMethodService>();
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<IVariableExpenseService, VariableExpenseService>();
+            services.AddScoped<IFixedExpenseService, FixedExpenseService>();
+            services.AddScoped<IInvestmentService, InvestmentService>();
+            services.AddScoped<IDashboardService, DashboardService>();
 
             return services;
         }

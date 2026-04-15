@@ -16,13 +16,6 @@ export const ContasTable = () => {
       type: 'text',
     },
     {
-      key: 'planejado',
-      header: 'Planejado',
-      width: '100px',
-      type: 'number',
-      format: formatCurrency,
-    },
-    {
       key: 'valor',
       header: 'Valor',
       width: '100px',
@@ -30,8 +23,8 @@ export const ContasTable = () => {
       format: formatCurrency,
     },
     {
-      key: 'dataPago',
-      header: 'Data Pago',
+      key: 'data',
+      header: 'Data',
       width: '110px',
       type: 'date',
       format: (v) => (typeof v === 'string' && v ? formatDate(v) : '-'),
@@ -46,9 +39,8 @@ export const ContasTable = () => {
 
   const emptyTemplate: Omit<Conta, 'id' | 'mes' | 'ano'> = {
     nome: '',
-    planejado: 0,
     valor: 0,
-    dataPago: undefined,
+    data: formatDateInput(new Date().toISOString()),
     pago: false,
   };
 

@@ -22,9 +22,8 @@ export interface Gasto {
 export interface Conta {
   id: string;
   nome: string;
-  planejado: number;
   valor: number;
-  dataPago?: string;
+  data: string;
   pago: boolean;
   mes: number;
   ano: number;
@@ -33,7 +32,6 @@ export interface Conta {
 export interface ReservaInvestimento {
   id: string;
   nome: string;
-  tipo: 'reserva' | 'investimento';
   valor: number;
   data: string;
   mes: number;
@@ -73,7 +71,6 @@ export interface DashboardMetrics {
     fluxoContas: Array<{
       nome: string;
       valor: number;
-      planejado: number;
       pago: boolean;
     }>;
     alocacaoCategorias: Array<{

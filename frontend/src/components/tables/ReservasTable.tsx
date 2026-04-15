@@ -16,17 +16,6 @@ export const ReservasTable = () => {
       type: 'text',
     },
     {
-      key: 'tipo',
-      header: 'Tipo',
-      width: '120px',
-      type: 'select',
-      options: [
-        { value: 'reserva', label: 'Reserva' },
-        { value: 'investimento', label: 'Investimento' },
-      ],
-      format: (v) => v === 'reserva' ? 'Reserva' : 'Investimento',
-    },
-    {
       key: 'valor',
       header: 'Valor',
       width: '100px',
@@ -44,14 +33,13 @@ export const ReservasTable = () => {
 
   const emptyTemplate: Omit<ReservaInvestimento, 'id' | 'mes' | 'ano'> = {
     nome: '',
-    tipo: 'reserva',
     valor: 0,
     data: formatDateInput(new Date().toISOString()),
   };
 
   return (
     <EditableTable<ReservaInvestimento>
-      title="Reservas & Investimentos"
+      title="Investimentos"
       columns={columns}
       data={reservas}
       onAdd={async (item) => { await addMutation.mutateAsync(item as Omit<ReservaInvestimento, 'id' | 'mes' | 'ano'>); }}

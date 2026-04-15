@@ -6,7 +6,6 @@ interface FluxoContasChartProps {
   data: Array<{
     nome: string;
     valor: number;
-    planejado: number;
     pago: boolean;
   }>;
 }
@@ -64,12 +63,6 @@ export const FluxoContasChart = ({ data }: FluxoContasChartProps) => {
                           <span className="text-muted-foreground">Valor</span>
                           <span className="font-mono font-medium tabular-nums text-foreground">
                             {formatCurrency(val as number)}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between gap-6">
-                          <span className="text-muted-foreground">Planejado</span>
-                          <span className="font-mono font-medium tabular-nums text-foreground">
-                            {formatCurrency(row.planejado)}
                           </span>
                         </div>
                         <div className={`text-xs ${row.pago ? 'text-success' : 'text-warning'}`}>

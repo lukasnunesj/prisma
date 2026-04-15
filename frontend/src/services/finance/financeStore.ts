@@ -1,12 +1,11 @@
-import { mockEntradas, mockGastos, mockContas, mockReservas } from '@/data/mockData';
 import type { Categoria, Conta, Entrada, FormaPagamento, Gasto, ReservaInvestimento } from '@/types/finance';
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-let entradas: Entrada[] = [...mockEntradas];
-let gastos: Gasto[] = [...mockGastos];
-let contas: Conta[] = [...mockContas];
-let reservas: ReservaInvestimento[] = [...mockReservas];
+let entradas: Entrada[] = [];
+let gastos: Gasto[] = [];
+let contas: Conta[] = [];
+let reservas: ReservaInvestimento[] = [];
 let categorias: Categoria[] = [];
 let formasPagamento: FormaPagamento[] = [];
 
