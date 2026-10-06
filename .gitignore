@@ -52,7 +52,10 @@ project.fragment.lock.json
 artifacts/
 
 ## Local settings
-backend/appsettings*
+backend/appsettings.Development.json
+
+## Test results
+TestResults/
 
 ## NuGet Packages
 *.nupkg
