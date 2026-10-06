@@ -47,7 +47,12 @@ builder.Services.AddIdentity<User, IdentityRole<Guid>>(options =>
 
 // Configurar JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY") ?? jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey not found.");
+// Fonte única da chave: a mesma que o AuthService usa para assinar. Em produção, defina JwtSettings__SecretKey.
+var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey not found.");
+if (!builder.Environment.IsDevelopment() && secretKey.StartsWith("SuaChaveSecreta"))
+{
+    throw new InvalidOperationException("JwtSettings:SecretKey ainda é o placeholder do repositório. Defina JwtSettings__SecretKey com uma chave própria.");
+}
 
 builder.Services.AddAuthentication(options =>
 {
